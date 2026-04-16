@@ -1,5 +1,5 @@
 ﻿import { config } from './config.js';
-import { createCommandCollection } from './commands/index.js';
+import { createCommandCollection, initCommands } from './commands/index.js';
 import { registerEvents } from './events/index.js';
 import { BotClient } from './types.js';
 import { GatewayIntentBits } from 'discord.js';
@@ -7,6 +7,8 @@ import { GatewayIntentBits } from 'discord.js';
 const client = new BotClient({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
+
+await initCommands();
 
 client.commands = createCommandCollection();
 

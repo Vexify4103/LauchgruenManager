@@ -1,103 +1,110 @@
 const SOURCEBIN_URL_REGEX = /^https?:\/\/(?:www\.)?(?:sourceb\.in|srcb\.in)\/([A-Za-z0-9]+)/i;
 const DISCORD_ID_REGEX = /\b\d{17,20}\b/g;
+const DISCORD_USERNAME_REGEX = /^[a-z0-9_.]{2,32}$/i;
 
 export const ROLE_ACTION_DELAY_MS = 1000;
 
 function getSourcebinKey(value: string): string | null {
-  const match = value.match(SOURCEBIN_URL_REGEX);
+	const match = value.match(SOURCEBIN_URL_REGEX);
 
-  return match?.[1] ?? null;
+	return match?.[1] ?? null;
 }
 
 async function fetchSourcebinText(sourcebinKey: string): Promise<string> {
-  const metadataResponse = await fetch(`https://sourceb.in/api/bins/${sourcebinKey}`, {
-    headers: {
-      'User-Agent': 'launchmanager-turnier-bot',
-      Accept: 'application/json',
-    },
-  });
+	const metadataResponse = await fetch(`https://sourceb.in/api/bins/${sourcebinKey}`, {
+		headers: {
+			'User-Agent': 'launchmanager-turnier-bot',
+			Accept: 'application/json',
+		},
+	});
 
-  if (!metadataResponse.ok) {
-    throw new Error(
-      `Konnte Sourcebin-Metadaten nicht laden (${metadataResponse.status} ${metadataResponse.statusText}).`,
-    );
-  }
+	if (!metadataResponse.ok) {
+		throw new Error(`Konnte Sourcebin-Metadaten nicht laden (${metadataResponse.status} ${metadataResponse.statusText}).`);
+	}
 
-  const metadata = (await metadataResponse.json()) as {
-    files?: Array<unknown>;
-  };
+	const metadata = (await metadataResponse.json()) as {
+		files?: Array<unknown>;
+	};
 
-  const fileCount = metadata.files?.length ?? 0;
+	const fileCount = metadata.files?.length ?? 0;
 
-  if (fileCount === 0) {
-    throw new Error('In diesem Sourcebin wurden keine Dateien gefunden.');
-  }
+	if (fileCount === 0) {
+		throw new Error('In diesem Sourcebin wurden keine Dateien gefunden.');
+	}
 
-  const contents = await Promise.all(
-    Array.from({ length: fileCount }, async (_, index) => {
-      const rawResponse = await fetch(`https://cdn.sourceb.in/bins/${sourcebinKey}/${index}`, {
-        headers: {
-          'User-Agent': 'launchmanager-turnier-bot',
-          Accept: 'text/plain',
-        },
-      });
+	const contents = await Promise.all(
+		Array.from({ length: fileCount }, async (_, index) => {
+			const rawResponse = await fetch(`https://cdn.sourceb.in/bins/${sourcebinKey}/${index}`, {
+				headers: {
+					'User-Agent': 'launchmanager-turnier-bot',
+					Accept: 'text/plain',
+				},
+			});
 
-      if (!rawResponse.ok) {
-        throw new Error(
-          `Konnte Sourcebin-Datei ${index} nicht laden (${rawResponse.status} ${rawResponse.statusText}).`,
-        );
-      }
+			if (!rawResponse.ok) {
+				throw new Error(`Konnte Sourcebin-Datei ${index} nicht laden (${rawResponse.status} ${rawResponse.statusText}).`);
+			}
 
-      return rawResponse.text();
-    }),
-  );
+			return rawResponse.text();
+		})
+	);
 
-  const combined = contents.map((content) => content.trim()).filter(Boolean).join('\n');
+	const combined = contents
+		.map((content) => content.trim())
+		.filter(Boolean)
+		.join('\n');
 
-  if (!combined) {
-    throw new Error('Im Sourcebin-Inhalt wurde kein lesbarer Text gefunden.');
-  }
+	if (!combined) {
+		throw new Error('Im Sourcebin-Inhalt wurde kein lesbarer Text gefunden.');
+	}
 
-  return combined;
+	return combined;
 }
 
 async function fetchTextFromUrl(url: string): Promise<string> {
-  const sourcebinKey = getSourcebinKey(url);
+	const sourcebinKey = getSourcebinKey(url);
 
-  if (sourcebinKey) {
-    return fetchSourcebinText(sourcebinKey);
-  }
+	if (sourcebinKey) {
+		return fetchSourcebinText(sourcebinKey);
+	}
 
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'launchmanager-turnier-bot',
-      Accept: 'text/plain;q=1,application/json;q=0.9,*/*;q=0.8',
-    },
-  });
+	const response = await fetch(url, {
+		headers: {
+			'User-Agent': 'launchmanager-turnier-bot',
+			Accept: 'text/plain;q=1,application/json;q=0.9,*/*;q=0.8',
+		},
+	});
 
-  if (!response.ok) {
-    throw new Error(`Konnte Link nicht laden (${response.status} ${response.statusText}).`);
-  }
+	if (!response.ok) {
+		throw new Error(`Konnte Link nicht laden (${response.status} ${response.statusText}).`);
+	}
 
-  return response.text();
+	return response.text();
 }
 
 export async function loadRoleListInput(input: string): Promise<string> {
-  const trimmed = input.trim();
+	const trimmed = input.trim();
 
-  if (/^https?:\/\//i.test(trimmed)) {
-    return fetchTextFromUrl(trimmed);
-  }
+	if (/^https?:\/\//i.test(trimmed)) {
+		return fetchTextFromUrl(trimmed);
+	}
 
-  return trimmed;
+	return trimmed;
 }
 
 export function extractDiscordUserIds(content: string): string[] {
-  const matches = content.match(DISCORD_ID_REGEX) ?? [];
+	const matches = content.match(DISCORD_ID_REGEX) ?? [];
 
-  return [...new Set(matches)];
+	return [...new Set(matches)];
 }
 
 export async function wait(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
+	await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function extractDiscordUsernames(content: string): string[] {
+	const lines = content.split(/[\n,;]+/);
+	const usernames = lines.map((line) => line.trim().replace(/^@/, '').toLowerCase()).filter((line) => DISCORD_USERNAME_REGEX.test(line));
+
+	return [...new Set(usernames)];
 }

@@ -55,8 +55,9 @@ const turnierStartCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('turnier_start')
 		.setDescription('Vergibt die Turnierrolle an alle User-IDs aus der Rollenliste.')
-		.addStringOption((option) => option.setName('roleliste').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
+		.addStringOption((option) => option.setName('user_id_liste').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
+	
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply({
@@ -92,7 +93,7 @@ const turnierStartCommand: BotCommand = {
 
 		await interaction.deferReply();
 
-		const userListInput = interaction.options.getString('roleliste', true);
+		const userListInput = interaction.options.getString('user_id_liste', true);
 
 		try {
 			const content = await loadRoleListInput(userListInput);
