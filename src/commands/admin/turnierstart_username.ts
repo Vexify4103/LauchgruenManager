@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, SlashCommandBuilder, type GuildMember } from 'discord.js';
 import { config } from '../../config.js';
-import { createTournamentEmbed } from '../../lib/tournamentEmbeds.js';
+import { createTournamentEmbed, wrapTournament } from '../../lib/tournamentEmbeds.js';
 import { ensureTournamentRole } from '../../lib/tournamentRole.js';
 import type { BotCommand } from '../../types.js';
 import { extractDiscordUsernames, loadRoleListInput, ROLE_ACTION_DELAY_MS, wait } from '../../utils.js';
@@ -16,43 +16,39 @@ function formatList(label: string, items: string[]): string | null {
 	return `${label}: ${preview}${suffix}`;
 }
 
-const turnierStartUsernameCommand: BotCommand = {
+const tournamentStartUsernameCommand: BotCommand = {
 	data: new SlashCommandBuilder()
-		.setName('turnier_start_username')
+		.setName('tournament_start_username')
 		.setDescription('Vergibt die Turnierrolle anhand von Discord-Usernamen.')
 		.addStringOption((option) => option.setName('user_name_liste').setDescription('Usernamen (eine pro Zeile, Komma- oder Semikolon-getrennt) oder Link').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
-			await interaction.reply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Falscher Server',
-						description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
-						processed: 0,
-						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Der Command kann hier nicht verwendet werden.'],
-					}),
-				],
-			});
+			await interaction.reply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Falscher Server',
+					description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
+					processed: 0,
+					total: 0,
+					status: 'Abgebrochen',
+					summaryLines: ['Der Command kann hier nicht verwendet werden.'],
+				}))
+			);
 			return;
 		}
 
 		if (!hasCommandPermission(interaction.member)) {
-			await interaction.reply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Fehlende Rechte',
-						description: 'Du darfst diesen Command nicht ausfuehren.',
-						processed: 0,
-						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
-					}),
-				],
-			});
+			await interaction.reply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Fehlende Rechte',
+					description: 'Du darfst diesen Command nicht ausfuehren.',
+					processed: 0,
+					total: 0,
+					status: 'Abgebrochen',
+					summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
+				}))
+			);
 			return;
 		}
 
@@ -65,18 +61,16 @@ const turnierStartUsernameCommand: BotCommand = {
 			const usernames = extractDiscordUsernames(content);
 
 			if (usernames.length === 0) {
-				await interaction.editReply({
-					embeds: [
-						createTournamentEmbed({
-							title: 'Turnier Start (Username)',
-							description: 'Es wurden keine gueltigen Discord-Usernamen gefunden.',
-							processed: 0,
-							total: 0,
-							status: 'Abgebrochen',
-							summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
-						}),
-					],
-				});
+				await interaction.editReply(
+					wrapTournament(createTournamentEmbed({
+						title: 'Tournament Start (Username)',
+						description: 'Es wurden keine gueltigen Discord-Usernamen gefunden.',
+						processed: 0,
+						total: 0,
+						status: 'Abgebrochen',
+						summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
+					}))
+				);
 				return;
 			}
 
@@ -84,18 +78,16 @@ const turnierStartUsernameCommand: BotCommand = {
 			if (!role) return;
 
 			// Fetch all members once — requires GuildMembers privileged intent
-			await interaction.editReply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Turnier Start (Username)',
-						description: 'Lade Servermitglieder...',
-						processed: 0,
-						total: usernames.length,
-						status: 'Vorbereitung',
-						summaryLines: ['Mitgliederliste wird vom Server abgerufen.'],
-					}),
-				],
-			});
+			await interaction.editReply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Tournament Start (Username)',
+					description: 'Lade Servermitglieder...',
+					processed: 0,
+					total: usernames.length,
+					status: 'Vorbereitung',
+					summaryLines: ['Mitgliederliste wird vom Server abgerufen.'],
+				}))
+			);
 
 			const allMembers = await interaction.guild.members.fetch();
 			// Build a lowercase username → member map
@@ -129,45 +121,41 @@ const turnierStartUsernameCommand: BotCommand = {
 				const isLast = index + 1 === usernames.length;
 				const detailLines = [formatList('Nicht gefunden', results.notFound), formatList('Fehlgeschlagen', results.failed)].filter(Boolean) as string[];
 
-				await interaction.editReply({
-					embeds: [
-						createTournamentEmbed({
-							title: 'Turnier Start (Username)',
-							description: isLast ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${usernames.length}.`,
-							processed: index + 1,
-							total: usernames.length,
-							status: isLast ? 'Abgeschlossen' : 'Laeuft',
-							summaryLines: [
-								`Verarbeitete Usernamen: ${index + 1}/${usernames.length}`,
-								`Rolle vergeben: ${results.added.length}`,
-								`Rolle bereits vorhanden: ${results.alreadyHadRole.length}`,
-								`Nicht im Server gefunden: ${results.notFound.length}`,
-								`Fehlgeschlagen: ${results.failed.length}`,
-							],
-							detailLines,
-						}),
-					],
-				});
+				await interaction.editReply(
+					wrapTournament(createTournamentEmbed({
+						title: 'Tournament Start (Username)',
+						description: isLast ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${usernames.length}.`,
+						processed: index + 1,
+						total: usernames.length,
+						status: isLast ? 'Abgeschlossen' : 'Laeuft',
+						summaryLines: [
+							`Verarbeitete Usernamen: ${index + 1}/${usernames.length}`,
+							`Rolle vergeben: ${results.added.length}`,
+							`Rolle bereits vorhanden: ${results.alreadyHadRole.length}`,
+							`Nicht im Server gefunden: ${results.notFound.length}`,
+							`Fehlgeschlagen: ${results.failed.length}`,
+						],
+						detailLines,
+					}))
+				);
 
 				const madeApiCall = !results.notFound.includes(username) && !results.alreadyHadRole.includes(username);
 				if (!isLast && madeApiCall) await wait(ROLE_ACTION_DELAY_MS);
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
-			await interaction.editReply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Turnier Start fehlgeschlagen',
-						description: 'Beim Verarbeiten der Usernamen ist ein Fehler aufgetreten.',
-						processed: 0,
-						total: 0,
-						status: 'Fehler',
-						summaryLines: [`Fehlermeldung: ${message}`],
-					}),
-				],
-			});
+			await interaction.editReply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Tournament Start fehlgeschlagen',
+					description: 'Beim Verarbeiten der Usernamen ist ein Fehler aufgetreten.',
+					processed: 0,
+					total: 0,
+					status: 'Fehler',
+					summaryLines: [`Fehlermeldung: ${message}`],
+				}))
+			);
 		}
 	},
 };
 
-export default turnierStartUsernameCommand;
+export default tournamentStartUsernameCommand;

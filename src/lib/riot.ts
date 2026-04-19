@@ -57,7 +57,11 @@ async function riotPost<T>(url: string, body: unknown): Promise<T> {
 		} catch {
 			/* ignore */
 		}
-		throw new RiotApiError(response.status, url, `Riot API Fehler ${response.status}${detail ? `: ${detail}` : ''}`);
+		const message =
+			response.status === 401 || response.status === 403
+				? 'Riot API Key ist ungueltig oder abgelaufen (oder fehlende Tournament-API-Berechtigung).'
+				: `Riot API Fehler ${response.status}${detail ? `: ${detail}` : ''}`;
+		throw new RiotApiError(response.status, url, message);
 	}
 
 	// Some endpoints return a plain number (provider/tournament ID)
