@@ -69,8 +69,16 @@ async function riotPost<T>(url: string, body: unknown): Promise<T> {
 	}
 }
 
+// Strip Unicode bidirectional/invisible control characters that Discord sometimes
+// injects around usernames (e.g. U+2066 LTR Isolate, U+2069 Pop Directional Isolate).
+const UNICODE_CONTROL_RE = /[\u200B-\u200F\u2028\u2029\u202A-\u202E\u2060-\u2069\uFEFF]/g;
+
+function sanitizeRiotId(input: string): string {
+	return input.replace(UNICODE_CONTROL_RE, '').trim();
+}
+
 export function parseRiotId(input: string): { gameName: string; tagLine: string } {
-	const trimmed = input.trim();
+	const trimmed = sanitizeRiotId(input);
 	const hashIndex = trimmed.lastIndexOf('#');
 	if (hashIndex === -1 || hashIndex === trimmed.length - 1 || hashIndex === 0) {
 		throw new Error(`Ungueltige Riot ID "${input}". Erwartet: Name#Tag`);
