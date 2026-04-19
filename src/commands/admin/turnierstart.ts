@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, SlashCommandBuilder, type GuildMember } from 'discord.js';
 import { config } from '../../config.js';
-import { createTournamentEmbed } from '../../lib/tournamentEmbeds.js';
+import { createTournamentEmbed, wrapTournament } from '../../lib/tournamentEmbeds.js';
 import { ensureTournamentRole } from '../../lib/tournamentRole.js';
 import type { BotCommand } from '../../types.js';
 import { extractDiscordUserIds, loadRoleListInput, ROLE_ACTION_DELAY_MS, wait } from '../../utils.js';
@@ -35,7 +35,7 @@ function buildStartEmbed(
 	const detailLines = [formatUserIdList('Nicht gefunden', results.notFound), formatUserIdList('Fehlgeschlagen', results.failed)].filter(Boolean) as string[];
 
 	return createTournamentEmbed({
-		title: 'Turnierstart',
+		title: 'Tournament Start',
 		description,
 		processed,
 		total,
@@ -51,43 +51,39 @@ function buildStartEmbed(
 	});
 }
 
-const turnierStartCommand: BotCommand = {
+const tournamentStartCommand: BotCommand = {
 	data: new SlashCommandBuilder()
-		.setName('turnier_start')
+		.setName('tournament_start')
 		.setDescription('Vergibt die Turnierrolle an alle User-IDs aus der Rollenliste.')
 		.addStringOption((option) => option.setName('user_id_liste').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
-	
+
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
-			await interaction.reply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Falscher Server',
-						description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
-						processed: 0,
-						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Der Command kann hier nicht verwendet werden.'],
-					}),
-				],
-			});
+			await interaction.reply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Falscher Server',
+					description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
+					processed: 0,
+					total: 0,
+					status: 'Abgebrochen',
+					summaryLines: ['Der Command kann hier nicht verwendet werden.'],
+				}))
+			);
 			return;
 		}
 
 		if (!hasCommandPermission(interaction.member)) {
-			await interaction.reply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Fehlende Rechte',
-						description: 'Du darfst diesen Command nicht ausfuehren.',
-						processed: 0,
-						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
-					}),
-				],
-			});
+			await interaction.reply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Fehlende Rechte',
+					description: 'Du darfst diesen Command nicht ausfuehren.',
+					processed: 0,
+					total: 0,
+					status: 'Abgebrochen',
+					summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
+				}))
+			);
 			return;
 		}
 
@@ -100,18 +96,16 @@ const turnierStartCommand: BotCommand = {
 			const userIds = extractDiscordUserIds(content);
 
 			if (userIds.length === 0) {
-				await interaction.editReply({
-					embeds: [
-						createTournamentEmbed({
-							title: 'Turnierstart',
-							description: 'Es wurden keine gueltigen Discord-User-IDs gefunden.',
-							processed: 0,
-							total: 0,
-							status: 'Abgebrochen',
-							summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
-						}),
-					],
-				});
+				await interaction.editReply(
+					wrapTournament(createTournamentEmbed({
+						title: 'Tournament Start',
+						description: 'Es wurden keine gueltigen Discord-User-IDs gefunden.',
+						processed: 0,
+						total: 0,
+						status: 'Abgebrochen',
+						summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
+					}))
+				);
 				return;
 			}
 
@@ -128,9 +122,7 @@ const turnierStartCommand: BotCommand = {
 				failed: [] as string[],
 			};
 
-			await interaction.editReply({
-				embeds: [buildStartEmbed(0, userIds.length, results, 'Laeuft', 'Die Turnierrolle wird jetzt Schritt fuer Schritt vergeben.')],
-			});
+			await interaction.editReply(wrapTournament(buildStartEmbed(0, userIds.length, results, 'Laeuft', 'Die Turnierrolle wird jetzt Schritt fuer Schritt vergeben.')));
 
 			for (const [index, userId] of userIds.entries()) {
 				try {
@@ -152,17 +144,16 @@ const turnierStartCommand: BotCommand = {
 					}
 				}
 
-				await interaction.editReply({
-					embeds: [
-						buildStartEmbed(
-							index + 1,
-							userIds.length,
-							results,
-							index + 1 === userIds.length ? 'Abgeschlossen' : 'Läuft',
-							index + 1 === userIds.length ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${userIds.length}.`
-						),
-					],
-				});
+				const isLast = index + 1 === userIds.length;
+				await interaction.editReply(
+					wrapTournament(buildStartEmbed(
+						index + 1,
+						userIds.length,
+						results,
+						isLast ? 'Abgeschlossen' : 'Läuft',
+						isLast ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${userIds.length}.`
+					))
+				);
 
 				if (index < userIds.length - 1) {
 					await wait(ROLE_ACTION_DELAY_MS);
@@ -171,20 +162,18 @@ const turnierStartCommand: BotCommand = {
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
 
-			await interaction.editReply({
-				embeds: [
-					createTournamentEmbed({
-						title: 'Turnierstart fehlgeschlagen',
-						description: 'Beim Verarbeiten der Rollenliste ist ein Fehler aufgetreten.',
-						processed: 0,
-						total: 0,
-						status: 'Fehler',
-						summaryLines: [`Fehlermeldung: ${message}`],
-					}),
-				],
-			});
+			await interaction.editReply(
+				wrapTournament(createTournamentEmbed({
+					title: 'Tournament Start fehlgeschlagen',
+					description: 'Beim Verarbeiten der Rollenliste ist ein Fehler aufgetreten.',
+					processed: 0,
+					total: 0,
+					status: 'Fehler',
+					summaryLines: [`Fehlermeldung: ${message}`],
+				}))
+			);
 		}
 	},
 };
 
-export default turnierStartCommand;
+export default tournamentStartCommand;
