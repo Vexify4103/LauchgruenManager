@@ -1,38 +1,31 @@
 import { config } from '../config.js';
 import { createTournament, createTournamentProvider, generateTournamentCodes } from './riot.js';
-import { updateStorage } from './storage.js';
+import { loadStorage, updateStorage } from './storage.js';
+import type { Storage } from '../types.js';
 
-/**
- * Ensure a Riot tournament provider + tournament exist in storage.
- * Returns the tournamentId. Idempotent — only creates once.
- */
-export async function ensureTournament(): Promise<number> {
-	return updateStorage(async (storage) => {
-		if (storage.tournament.tournamentId !== undefined) {
-			return storage.tournament.tournamentId;
-		}
+/** Ensure provider + tournament exist. Must be called inside an updateStorage mutator. */
+async function ensureTournamentInStorage(storage: Storage): Promise<number> {
+	if (storage.tournament.tournamentId !== undefined) {
+		return storage.tournament.tournamentId;
+	}
 
-		let providerId = storage.tournament.providerId;
-		if (providerId === undefined) {
-			console.log('[tournament] Erstelle Provider...');
-			providerId = await createTournamentProvider(config.tournamentCallbackUrl);
-			storage.tournament.providerId = providerId;
-			console.log(`[tournament] Provider ID: ${providerId}`);
-		}
+	let providerId = storage.tournament.providerId;
+	if (providerId === undefined) {
+		console.log('[tournament] Erstelle Provider...');
+		providerId = await createTournamentProvider(config.tournamentCallbackUrl);
+		storage.tournament.providerId = providerId;
+		console.log(`[tournament] Provider ID: ${providerId}`);
+	}
 
-		console.log('[tournament] Erstelle Tournament...');
-		const tournamentId = await createTournament(providerId, 'Fearless Tournament');
-		storage.tournament.tournamentId = tournamentId;
-		console.log(`[tournament] Tournament ID: ${tournamentId}`);
+	console.log('[tournament] Erstelle Tournament...');
+	const tournamentId = await createTournament(providerId, 'Fearless Tournament');
+	storage.tournament.tournamentId = tournamentId;
+	console.log(`[tournament] Tournament ID: ${tournamentId}`);
 
-		return tournamentId;
-	});
+	return tournamentId;
 }
 
-/**
- * Get the tournament code for a match, generating it if it doesn't exist yet.
- * Returns the code string.
- */
+/** Get the tournament code for a match, generating it on first call. */
 export async function getOrCreateMatchCode(matchId: string, allowedPuuids: string[]): Promise<string> {
 	return updateStorage(async (storage) => {
 		const match = storage.tournament.matches.find((m) => m.id === matchId);
@@ -40,7 +33,9 @@ export async function getOrCreateMatchCode(matchId: string, allowedPuuids: strin
 
 		if (match.tournamentCode) return match.tournamentCode;
 
-		const tournamentId = await ensureTournament();
+		// Run tournament setup inline — never call updateStorage here to avoid deadlock
+		const tournamentId = await ensureTournamentInStorage(storage);
+
 		const codes = await generateTournamentCodes({
 			tournamentId,
 			allowedPuuids: allowedPuuids.length > 0 ? allowedPuuids : undefined,
