@@ -1,6 +1,8 @@
 ﻿import { ActivityType } from 'discord.js';
 import { config } from '../config.js';
+import { startAutoscan } from '../lib/autoscan.js';
 import { deployGuildCommands } from '../lib/deployCommands.js';
+import { loadStorage } from '../lib/storage.js';
 import type { BotEvent } from '../types.js';
 
 const clientReadyEvent: BotEvent<'clientReady'> = {
@@ -12,6 +14,9 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 			console.log(`Aktive Ziel-Guild: ${config.guildId}`);
 			console.log('Guild-Slashcommands wurden beim Start synchronisiert.');
 			console.log(`Bot eingeloggt als ${client.user?.tag ?? 'unbekannt'}`);
+
+			await loadStorage();
+			startAutoscan(client);
 
 			client.user?.setPresence({
 				status: 'online',

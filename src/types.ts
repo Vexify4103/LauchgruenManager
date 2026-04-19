@@ -1,9 +1,10 @@
-﻿import type { ChatInputCommandInteraction, ClientEvents, Collection, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import type { AutocompleteInteraction, ChatInputCommandInteraction, ClientEvents, Collection, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import { Client } from 'discord.js';
 
 export type BotCommand = {
-	data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+	data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
 	execute: (interaction: ChatInputCommandInteraction<'cached'>) => Promise<void>;
+	autocomplete?: (interaction: AutocompleteInteraction<'cached'>) => Promise<void>;
 };
 
 export type BotEvent<K extends keyof ClientEvents = keyof ClientEvents> = {
@@ -15,3 +16,75 @@ export type BotEvent<K extends keyof ClientEvents = keyof ClientEvents> = {
 export class BotClient extends Client {
 	public commands!: Collection<string, BotCommand>;
 }
+
+export type StoredPlayer = {
+	riotId: string;
+	puuid: string;
+	discordId?: string;
+};
+
+export type StoredTeam = {
+	name: string;
+	players: StoredPlayer[];
+	playedChampions: string[];
+	/** Discord role ID whose members can see/join the team voice channel. */
+	roleId?: string;
+	/** Voice channel ID created for this team. */
+	voiceChannelId?: string;
+};
+
+/** A single scheduled match within a round. */
+export type StoredMatch = {
+	id: string;
+	round: number;
+	teamAKey: string;
+	teamBKey: string;
+	/** Riot tournament code — generated on first captain button click. */
+	tournamentCode?: string;
+	/** Filled after a successful /scangame for this match. */
+	riotMatchId?: string;
+	/** Discord message ID of the match embed in the matches channel. */
+	messageId?: string;
+	channelId?: string;
+	createdAt: number;
+};
+
+export type TournamentData = {
+	providerId?: number;
+	tournamentId?: number;
+	matches: StoredMatch[];
+};
+
+export type Storage = {
+	teams: Record<string, StoredTeam>;
+	scannedMatches: string[];
+	tournament: TournamentData;
+};
+
+export type RiotAccount = {
+	puuid: string;
+	gameName: string;
+	tagLine: string;
+};
+
+export type RiotMatchParticipant = {
+	puuid: string;
+	championName: string;
+	teamId: number;
+	riotIdGameName?: string;
+	riotIdTagline?: string;
+	summonerName?: string;
+};
+
+export type RiotMatch = {
+	metadata: {
+		matchId: string;
+		participants: string[];
+	};
+	info: {
+		gameCreation: number;
+		gameDuration: number;
+		participants: RiotMatchParticipant[];
+		queueId: number;
+	};
+};
