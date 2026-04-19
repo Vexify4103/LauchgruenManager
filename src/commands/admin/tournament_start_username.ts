@@ -20,7 +20,7 @@ const tournamentStartUsernameCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('tournament_start_username')
 		.setDescription('Vergibt die Turnierrolle anhand von Discord-Usernamen.')
-		.addStringOption((option) => option.setName('user_name_liste').setDescription('Usernamen (eine pro Zeile, Komma- oder Semikolon-getrennt) oder Link').setRequired(true))
+		.addStringOption((option) => option.setName('user_name_list').setDescription('Usernamen (eine pro Zeile, Komma- oder Semikolon-getrennt) oder Link').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {

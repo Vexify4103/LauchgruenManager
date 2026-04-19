@@ -64,7 +64,7 @@ const clearNamesCommand: BotCommand = {
 				}
 
 				try {
-					await member.setNickname(null, `Fearless-Bot: Nickname cleared by clearnames`);
+					await member.setNickname(null, `LauchManager: Nickname cleared by clearnames`);
 					stats.cleared++;
 				} catch {
 					stats.failed++;

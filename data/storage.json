@@ -1,0 +1,287 @@
+{
+	"teams": {
+		"coinflip": {
+			"name": "Coinflip",
+			"players": [
+				{
+					"riotId": "Iced0utTanjiro#EUW",
+					"puuid": "Acxr3KNe9vovPLS1ED2vLQCGf7YLfuZoXpsnJY8PoYNJ_We3crqb5uXbyiqVKwJAeH2slmbe9lXYsg",
+					"discordId": "549220405634662401"
+				},
+				{
+					"riotId": "DELIGHTFUL DEREK#DIP",
+					"puuid": "phwSa3QPWptjuYWMKGun7WsswXGpSCaxUietA4YYW6rUHK0AZyvDhGGZ1JltaxoFpT87O9OqITn4PQ",
+					"discordId": "1272895368576634993"
+				},
+				{
+					"riotId": "Yoshii#143",
+					"puuid": "CU0xhmw2Z5v2z9X0mLOJH6iuda9KoLYBp4MI8MMWUm_ZpGbfUofNPpa3v7UQHeiv1CdMN-RJ2GTBpw",
+					"discordId": "308586282542563328"
+				},
+				{
+					"riotId": "Nacht#Thrsh",
+					"puuid": "vpTN-FFxGDRtOxdovQRTAgKdOTJf2-VlMmTdxgUtQHIpD_EF8qokKsCPq67aTsSlCtoyyvKZqffQwQ",
+					"discordId": "280088860011003904"
+				},
+				{
+					"riotId": "FroggyTease#Frog",
+					"puuid": "yGTsaWR0Pc-X2EwWqx7pwZBO6NB6fFaPMp6bO2RDcoFnChfRy0chXhB2nInRc8A_1zefUBW9QJIlYQ",
+					"discordId": "907346135893569607"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076625787162806",
+			"voiceChannelId": "1495414567516377089"
+		},
+		"int squad": {
+			"name": "Int Squad",
+			"players": [
+				{
+					"riotId": "TwTv Crössic#MT1",
+					"puuid": "ok1ZunJBenOlCR0HMxwPSQjo_jcNQiEmXx90x3OgxwifuiBvQiu13z-QYfFa-cbpbiJ_nukRVnk--g",
+					"discordId": "902575828020396053"
+				},
+				{
+					"riotId": "TacticalB0ner88#3291",
+					"puuid": "XhCaWCGMsLhL8SCdC8_8ngSsSnDO9DL3by7qQbhNk-U9Kekspt3YyamjkfPPNStoXj94WbLoV6tVvA",
+					"discordId": "503638785318453248"
+				},
+				{
+					"riotId": "MadCauseBad#MCB",
+					"puuid": "zfW_StESkgHojhrW-nASqNnrxWSI2Gn1_EfVykdJ-4t6WE_3FpvlwtjFfx3GM-m2A0jJR5ySLfiepg",
+					"discordId": "509810649153404928"
+				},
+				{
+					"riotId": "illegalsInMyYard#ExG",
+					"puuid": "NjMkIbOe7Nitz2tRIMB1kRCV-Tvi_hUWPCQz21G7YTZ4G_u3f0sYJu-DxPzonxPvDLq8AqhqnLXW8g",
+					"discordId": "390247287546183680"
+				},
+				{
+					"riotId": "MomokaChii#EUW",
+					"puuid": "GTIwXLKItnx3cyBTHbEzaNEssnoVGnStKgBgMCP-SL-nG3xsNauobZw8s8iHju4PomPPkpfqJyIalw",
+					"discordId": "858363947928256531"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076750727348234",
+			"voiceChannelId": "1495415245022302219"
+		},
+		"draft diff": {
+			"name": "Draft Diff",
+			"players": [
+				{
+					"riotId": "AnimeSaikyou#Wäh",
+					"puuid": "KkHKPtIq7oqP2UA32xjuzmUpoz8SSvxYSbCO6Z1JGUq0FhJ79eTHsYwBUcfY7w_TYsoMEIVLBtB3Tw",
+					"discordId": "422825138489393156"
+				},
+				{
+					"riotId": "ThisIsJanaX2000#EUWW",
+					"puuid": "r4E68yBvDd0cVnyIRYRzgV4wFzxlUVpOkCdTs63HDSFSASojMQygOgEvJze03nJGz-41Un8ccXHf4A",
+					"discordId": "834032437930754058"
+				},
+				{
+					"riotId": "Shenanígans#Core",
+					"puuid": "UDnVfUT0O_rdFRbEpRu3sycUkd6iutRBwiGRVSuk2dgRVuX-DyMq2L3qydfahwTjlWnIthSe8_LPgw",
+					"discordId": "438691351513530379"
+				},
+				{
+					"riotId": "ShOrnnTheSheep#7717",
+					"puuid": "u3X_cyTJLxmS6DEdFnkhQds1ezqLWzR9sDyNO72bFX_1HVE218V30VJS0ufPkactLNl05AmvgtY4Tg",
+					"discordId": "992823604154740776"
+				},
+				{
+					"riotId": "N4cht4r4#cute",
+					"puuid": "dztj953rwOY045w7hOAP4T7VOa7V8XaawWCpXI3-2PbOYUP2LF6WYZ50A_XDozLHNAMMCh1Ag1YscA",
+					"discordId": "248841932913115136"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076789813809275",
+			"voiceChannelId": "1495417658353651958"
+		},
+		"baron flip": {
+			"name": "Baron Flip",
+			"players": [
+				{
+					"riotId": "BigSchuetze2#EUW",
+					"puuid": "NX3F_e3jyKwoOpFnLbflYmEONIwH1tggQi-p50hTubaBqe5UEapJjtLGFbLK4f1PEg_OrZli5aQ_3Q",
+					"discordId": "311497927870775297"
+				},
+				{
+					"riotId": "Power of Läusel#EUW",
+					"puuid": "iAmPTTvpFK0CXLah0ohNntGTKbq58HZYk-Dh4cd4JvPz14najjFDZWxmAQijtMcTwCx2ilpvxyVoJA",
+					"discordId": "285042197156462592"
+				},
+				{
+					"riotId": "Gennartv#EUW",
+					"puuid": "DOOA4SL7GiIvUv_VzCG6PJw6_bJ79eYB7SLAlyvyFzJp8Yoj18Sm9J2o_FZWyE8HoSrRPjtUdCNdDQ",
+					"discordId": "420311748734746624"
+				},
+				{
+					"riotId": "TobiVGC#Vibe",
+					"puuid": "oAtDjqn2YRlUqafHGEp8JbQyAqhsxS5o_gIABvnhgdNDT3yBlQ_Xd5oY-o4_toN8hwwgWc6bkl7dPA",
+					"discordId": "397130770986041354"
+				},
+				{
+					"riotId": "WKatulo#4801",
+					"puuid": "thj7SP4JFGJl8-iN080VY6veYqCqYZ-hrXCQax1aCXdeYgfqumj7DCxTaQyUM9oQWsa94SxAxjhvVQ",
+					"discordId": "376356572726820864"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076819815796837",
+			"voiceChannelId": "1495418068044746823"
+		},
+		"skill issue": {
+			"name": "Skill Issue",
+			"players": [
+				{
+					"riotId": "Tonyツ#BRRRR",
+					"puuid": "BitIwZydlw8tfqJLbTYxWchZTnw2KbjFSdfdXlnG97z0QpRcgkrVEHRoZ3v0uW7z73LJj_p3L3-_-Q",
+					"discordId": "872142504034705440"
+				},
+				{
+					"riotId": "Luxx#RIP",
+					"puuid": "CWsskaPnMkK0cHWMqJ2isFXaKqM6gpNX2wADvQ54K_YFp6WWc8rrt0t_2mCDrhjH5MijiiXJJXYLhw",
+					"discordId": "571801678857109505"
+				},
+				{
+					"riotId": "TodaySmash#EXG",
+					"puuid": "JdNHG1VdIK4p8CkLWJXLByqZLuhrLBu1FljWqhqaC2VHLISbDCTS6kmHucWUdjm3G9v8zf6wEovGQQ",
+					"discordId": "395139547782184961"
+				},
+				{
+					"riotId": "LethalFluff#poof",
+					"puuid": "nR8uYzAneJbifnBFRnoBxBSbaHd0U2Y3zwDnZ6vVkypk9QX_3wCCXPsKOJZBUBlnLF9f8S7gYc7IBA",
+					"discordId": "337568120028004362"
+				},
+				{
+					"riotId": "AccountName#Jenny",
+					"puuid": "uhW-6p0npVvyms5UV1PuEKO1vmERfrMc3DCLmBnLJ1rrj6oEHi91cM-_JkVVx6hykEc54cytCPxS-Q",
+					"discordId": "998930461403394151"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076878079004753",
+			"voiceChannelId": "1495418448946397325"
+		},
+		"gap enjoyers": {
+			"name": "Gap Enjoyers",
+			"players": [
+				{
+					"riotId": "LukBee#EUW",
+					"puuid": "um5MZQ3pwq1X5vjz22ZVBEMY-pjhiNSxYOQbAQR4By0Y9mOrR5QR9azty8cjAb4JXt40QbNspjVRew",
+					"discordId": "439824872399568900"
+				},
+				{
+					"riotId": "IchbinKacke#Titus",
+					"puuid": "ICD03MiQWwlVOFjmYmsGktxBUKxuryUqMRZl_GmQgxItlKGGkE4bXfr38tmlDI79mSvVt-ClVWKvWQ",
+					"discordId": "211527431507410945"
+				},
+				{
+					"riotId": "McFly#9134",
+					"puuid": "zkGOxrGdHQh743F8zTmcfdWupb9BLc4z8SsVhp6Ul_UIRHtyRcYwsjeimbKDS_8INGZQTnyQkTI7XA",
+					"discordId": "536248190626693121"
+				},
+				{
+					"riotId": "cutie patootie#happy",
+					"puuid": "1G50glqLvpTvLpPok0DC2CXCBYgEEb7KtpHf_KondCabaCYfxOSgDDfin_a6tgnp0rcypJPzQ_a47w",
+					"discordId": "452872290347122698"
+				},
+				{
+					"riotId": "xtgZeo#Zeo",
+					"puuid": "d6NjtCQGz34bIl5_DAowy2hqqUALePwZd-92igcE5oXlIy34UfHYeiH20JXvvd0ly6GWJuz-5gxYbg",
+					"discordId": "303310837324447744"
+				},
+				{
+					"riotId": "gute nacht#müde",
+					"puuid": "XbOZ_3N76jNdesqRmVnplzLnpcj2PUJQSNIigMw9sKV_3NLvKMu2_rEEhcww6D728a3fbIf7-_Lz1g",
+					"discordId": "364826992241278977"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1474076923851444325",
+			"voiceChannelId": "1495418804191236287"
+		},
+		"full send": {
+			"name": "Full Send",
+			"players": [
+				{
+					"riotId": "Rat Lover#Airi",
+					"puuid": "rXcMwT4pksbMLIpjrqz2pthbhpaRWZIjJcfl_u9LEd3K1nRy2Owoz0LesH8BE-ANP-2zfGqLC9lPtQ",
+					"discordId": "836978229692334142"
+				},
+				{
+					"riotId": "N8trider#rider",
+					"puuid": "AfGS3G1BT1VaUrZlbLWLVPpsmrw4Yi30qe64BGkR2TPYTemmL4J8OuLcC2OG4PgW8kSEcw-LnXDqoA",
+					"discordId": "272815798114975744"
+				},
+				{
+					"riotId": "schlaf gut#müde",
+					"puuid": "H0H7hMVoc6aszpDO9oxzZUx5VuQiKPeOzArkflkaV_wSs7_vdt0By30m2d6p_qMuG1mpZq5bkvkGRg",
+					"discordId": "535811848008761356"
+				},
+				{
+					"riotId": "Sweet Kaan#uwu",
+					"puuid": "sPs5IbxHiXOtKDG4BNQBGVjk2S24mHiE8gqoov64_6TkC2RIUgublyFz3GqwxsQImIkR5wqJPjYyTA",
+					"discordId": "772178664547942441"
+				},
+				{
+					"riotId": "Brot#30119",
+					"puuid": "nWoQPJN04agVs3n6fC4lstpAhfV5NCQHgyOcODBKXPc0cKUbV8FIijYu4ofv87r3HLAcwqoE8JYozA",
+					"discordId": "378299272065712128"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1489314003439063141",
+			"voiceChannelId": "1495419258308526321"
+		},
+		"tiltproof": {
+			"name": "Tiltproof",
+			"players": [
+				{
+					"riotId": "Pusteblumenheld#Puste",
+					"puuid": "3CWeFpWFN1v8yebNPfceXexlfRo47CuR7U108YpqSm1c3tmVyiTv1UbLCKCrmJIjwv1K2rGQpaSSHg",
+					"discordId": "298599570345295874"
+				},
+				{
+					"riotId": "Ferizz#GEIL",
+					"puuid": "EeSGUPcOuuZSF6acnhl0rZADHmZ0jv2ANcWfg7SFa9HA8XPR3xeQZrfxFzktWhANEgDawda9zbHcRQ",
+					"discordId": "257242764037718027"
+				},
+				{
+					"riotId": "ZADOOS#TTV",
+					"puuid": "Gmgq8HjqnNcTHagZqewTxIjdjymPpB7zVnz0zVttdaV8JSBkWTb0uF-jhoK0LDMp1uDav0JbKdBXKQ",
+					"discordId": "447773319660568586"
+				},
+				{
+					"riotId": "Aoi Akuma#EUW",
+					"puuid": "98MB-tIoaehlKJ_2dICZU4Z4zPNYJ6PAn6uGmRY8th6hJHosoKGbf6W4wTTKvTLGnTUorWxNmYmLew",
+					"discordId": "470613988338696203"
+				},
+				{
+					"riotId": "Hìppokrate#7758",
+					"puuid": "hktPaDEeHJrTixu0vC3xsudJCVe7TUGo9Q38Eyc-DXiqt5YP7EdyG9VXIAOtsV-YdqzsEGNUhDJtqg",
+					"discordId": "613073798144720927"
+				}
+			],
+			"playedChampions": [],
+			"roleId": "1489314013048213616",
+			"voiceChannelId": "1495419693094146068"
+		}
+	},
+	"scannedMatches": [],
+	"tournament": {
+		"matches": [
+			{
+				"id": "r1-baron flip-vs-skill issue",
+				"round": 1,
+				"teamAKey": "baron flip",
+				"teamBKey": "skill issue",
+				"channelId": "1495412621413716220",
+				"createdAt": 1776607279285,
+				"messageId": "1495424059691897007"
+			}
+		]
+	}
+}

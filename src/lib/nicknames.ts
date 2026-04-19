@@ -60,7 +60,7 @@ export async function renamePlayer(
 	}
 
 	try {
-		await member.setNickname(nickname, `Fearless-Bot: Riot-ID Sync (${riotId})`);
+		await member.setNickname(nickname, `LauchManager: Riot-ID Sync (${riotId})`);
 		return { kind: 'renamed', riotId, discordId };
 	} catch (error) {
 		return { kind: 'failed', riotId, discordId, error: error instanceof Error ? error.message : String(error) };

@@ -53,9 +53,9 @@ function buildStartEmbed(
 
 const tournamentStartCommand: BotCommand = {
 	data: new SlashCommandBuilder()
-		.setName('tournament_start')
+		.setName('tournament_start_id')
 		.setDescription('Vergibt die Turnierrolle an alle User-IDs aus der Rollenliste.')
-		.addStringOption((option) => option.setName('user_id_liste').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
+		.addStringOption((option) => option.setName('user_id_list').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
