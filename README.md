@@ -59,6 +59,10 @@ All commands require `Manage Server` or `Administrator` permission.
 |---|---|---|
 | `/startmatch` | `round` (req), `team_a` (req), `team_b` (req) | Posts a match embed; team captains click to get their lobby code |
 
+### Logs
+
+Set `LOG_CHANNEL_ID` to a private admin channel. Every slash command execution (user, options, success/error) is posted there automatically. The bot also logs a startup message when it comes online.
+
 ### Nickname Sync
 
 | Command | Options | Description |

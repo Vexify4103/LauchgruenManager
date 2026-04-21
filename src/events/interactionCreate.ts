@@ -1,6 +1,7 @@
 import { MessageFlags } from 'discord.js';
 import { config } from '../config.js';
 import { buildMatchContainer, makeEmbed } from '../lib/embeds.js';
+import { logCommand } from '../lib/logger.js';
 import { loadStorage } from '../lib/storage.js';
 import { getOrCreateMatchCode } from '../lib/tournamentCodes.js';
 import type { BotEvent } from '../types.js';
@@ -140,8 +141,10 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 
 		try {
 			await command.execute(interaction);
+			logCommand(client, interaction);
 		} catch (error) {
 			console.error(`[interaction] /${interaction.commandName}:`, error);
+			logCommand(client, interaction, error);
 			if (interaction.deferred || interaction.replied) {
 				await interaction.editReply('Beim Ausfuehren des Commands ist ein Fehler aufgetreten.');
 				return;

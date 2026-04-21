@@ -45,6 +45,8 @@ export const config = {
 	captainRoleId: process.env.CAPTAIN_ROLE_ID ?? '1476998578084909077',
 	/** Channel where /startmatch posts match embeds. */
 	matchesChannelId: process.env.MATCHES_CHANNEL_ID?.trim() || null,
+	/** Channel where admin command executions and errors are logged. */
+	logChannelId: process.env.LOG_CHANNEL_ID?.trim() || null,
 	/** Callback URL registered with Riot's tournament-stub provider (any valid URL). */
 	tournamentCallbackUrl: process.env.TOURNAMENT_CALLBACK_URL ?? 'https://example.com/riot-callback',
 };

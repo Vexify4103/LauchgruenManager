@@ -2,6 +2,7 @@
 import { config } from '../config.js';
 import { startAutoscan } from '../lib/autoscan.js';
 import { deployGuildCommands } from '../lib/deployCommands.js';
+import { logInfo } from '../lib/logger.js';
 import { loadStorage } from '../lib/storage.js';
 import type { BotEvent } from '../types.js';
 
@@ -17,6 +18,8 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 
 			await loadStorage();
 			startAutoscan(client);
+
+			logInfo(client, '🟢 Bot gestartet', `Eingeloggt als **${client.user?.tag ?? '?'}** · Autoscan: **${config.autoscanEnabled ? 'an' : 'aus'}**`);
 
 			client.user?.setPresence({
 				status: 'online',
