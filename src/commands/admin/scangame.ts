@@ -1,5 +1,6 @@
 import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder, type MessageCreateOptions } from 'discord.js';
 import { hasAdminPermission, makeEmbed } from '../../lib/embeds.js';
+import { postMatchResult } from '../../lib/matchResult.js';
 import { normalizeMatchId } from '../../lib/riot.js';
 import { buildScanMessage, scanMatch } from '../../lib/scanner.js';
 import type { BotCommand } from '../../types.js';
@@ -48,6 +49,7 @@ const scanGameCommand: BotCommand = {
 
 		if (outcome.kind === 'success') {
 			console.log(`[scangame] ${outcome.matchId} verarbeitet. Teams: ${outcome.teamResults.map((b) => b.team.name).join(', ')}`);
+			void postMatchResult(interaction.client, outcome);
 		}
 	},
 };

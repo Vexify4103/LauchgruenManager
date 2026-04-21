@@ -1,6 +1,7 @@
 import type { Client, TextChannel } from 'discord.js';
 import { ChannelType } from 'discord.js';
 import { config } from '../config.js';
+import { postMatchResult } from './matchResult.js';
 import { fetchRecentMatchIds, RiotApiError } from './riot.js';
 import { buildScanMessage, scanMatch } from './scanner.js';
 import { loadStorage } from './storage.js';
@@ -102,6 +103,7 @@ export async function runOnePoll(client: Client): Promise<{ processed: number; n
 							});
 						}
 					}
+					void postMatchResult(client, outcome);
 				} else if (outcome.kind === 'riot-error') {
 					errors.push(`[${matchId}] ${outcome.message}`);
 				}

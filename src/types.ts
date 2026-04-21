@@ -70,7 +70,26 @@ export type RiotAccount = {
 export type RiotMatchParticipant = {
 	puuid: string;
 	championName: string;
+	champLevel: number;
 	teamId: number;
+	win: boolean;
+	// KDA
+	kills: number;
+	deaths: number;
+	assists: number;
+	// Stats
+	totalDamageDealtToChampions: number;
+	totalDamageTaken: number;
+	goldEarned: number;
+	totalMinionsKilled: number;
+	neutralMinionsKilled: number;
+	visionScore: number;
+	// Multikills
+	pentaKills: number;
+	quadraKills: number;
+	tripleKills: number;
+	doubleKills: number;
+	// Identity
 	riotIdGameName?: string;
 	riotIdTagline?: string;
 	summonerName?: string;

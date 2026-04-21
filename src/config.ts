@@ -47,6 +47,8 @@ export const config = {
 	matchesChannelId: process.env.MATCHES_CHANNEL_ID?.trim() || null,
 	/** Channel where admin command executions and errors are logged. */
 	logChannelId: process.env.LOG_CHANNEL_ID?.trim() || null,
+	/** Channel where match result stats embeds are posted after every scan. */
+	resultsChannelId: process.env.RESULTS_CHANNEL_ID?.trim() || null,
 	/** Callback URL registered with Riot's tournament-stub provider (any valid URL). */
 	tournamentCallbackUrl: process.env.TOURNAMENT_CALLBACK_URL ?? 'https://example.com/riot-callback',
 };
