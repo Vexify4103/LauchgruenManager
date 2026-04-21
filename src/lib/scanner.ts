@@ -94,8 +94,11 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
 			}
 		}
 
-		for (const bucket of perTeam.values()) {
-			for (const champ of bucket.newlyAdded) bucket.team.playedChampions.push(champ);
+		// Only track Fearless champion bans in fearless mode (default when mode is unset)
+		if ((storage.tournament.mode ?? 'fearless') === 'fearless') {
+			for (const bucket of perTeam.values()) {
+				for (const champ of bucket.newlyAdded) bucket.team.playedChampions.push(champ);
+			}
 		}
 		storage.scannedMatches.push(match.metadata.matchId);
 

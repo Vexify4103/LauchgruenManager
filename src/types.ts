@@ -49,10 +49,16 @@ export type StoredMatch = {
 	createdAt: number;
 };
 
+export type TournamentMode = 'fearless' | 'standard';
+
 export type TournamentData = {
 	providerId?: number;
 	tournamentId?: number;
 	matches: StoredMatch[];
+	/** 'fearless' tracks played champions per team; 'standard' only posts stats. Defaults to 'fearless'. */
+	mode?: TournamentMode;
+	/** Human-readable name shown in status and embeds. */
+	name?: string;
 };
 
 export type Storage = {

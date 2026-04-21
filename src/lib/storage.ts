@@ -16,13 +16,16 @@ async function readFromDisk(): Promise<Storage> {
 	try {
 		const raw = await readFile(config.storagePath, 'utf8');
 		const parsed = JSON.parse(raw) as Partial<Storage>;
+		const t = parsed.tournament as Storage['tournament'] | undefined;
 		return {
 			teams: parsed.teams ?? {},
 			scannedMatches: parsed.scannedMatches ?? [],
 			tournament: {
-				providerId: (parsed.tournament as Storage['tournament'] | undefined)?.providerId,
-				tournamentId: (parsed.tournament as Storage['tournament'] | undefined)?.tournamentId,
-				matches: (parsed.tournament as Storage['tournament'] | undefined)?.matches ?? [],
+				providerId: t?.providerId,
+				tournamentId: t?.tournamentId,
+				matches: t?.matches ?? [],
+				mode: t?.mode,
+				name: t?.name,
 			},
 		};
 	} catch (error) {
