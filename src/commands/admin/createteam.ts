@@ -1,4 +1,4 @@
-import { ChannelType, MessageFlags, OverwriteType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { ChannelType, MessageFlags, OverwriteType, PermissionFlagsBits, SlashCommandBuilder, type Role } from 'discord.js';
 import { config } from '../../config.js';
 import { hasAdminPermission, makeEmbed } from '../../lib/embeds.js';
 import { findTeam, normalizeTeamName, teamKey, updateStorage } from '../../lib/storage.js';
@@ -7,27 +7,47 @@ import type { BotCommand } from '../../types.js';
 const createTeamCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('createteam')
-		.setDescription('Legt ein neues Team an, erstellt einen Voice-Channel und verknuepft eine Rolle.')
-		.addStringOption((o) => o.setName('name').setDescription('Teamname, z.B. "Team Coinflip"').setRequired(true))
-		.addRoleOption((o) => o.setName('role').setDescription('Discord-Rolle der Team-Mitglieder (fuer Channel-Berechtigungen)').setRequired(false))
+		.setDescription('Creates a new team, a voice channel, and links or creates a Discord role.')
+		.addStringOption((o) => o.setName('name').setDescription('Team name, e.g. "Team Coinflip"').setRequired(true))
+		.addBooleanOption((o) => o.setName('create_role').setDescription('Automatically create a new Discord role named after the team (default: false)').setRequired(false))
+		.addRoleOption((o) => o.setName('role').setDescription('Link an already existing Discord role instead of creating one').setRequired(false))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
 		const rawName = interaction.options.getString('name', true);
 		const name = normalizeTeamName(rawName);
 		if (name.length === 0) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Ungueltiger Name', 'Der Teamname darf nicht leer sein.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Invalid Name', 'The team name cannot be empty.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
-		const role = interaction.options.getRole('role', false);
+		const existingRole = interaction.options.getRole('role', false);
+		const shouldCreateRole = interaction.options.getBoolean('create_role') ?? false;
 
 		await interaction.deferReply();
+
+		// Resolve the role: existing role takes priority, then auto-create if requested
+		let role: Role | null = existingRole as Role | null;
+		let roleNote = '';
+
+		if (!role && shouldCreateRole) {
+			try {
+				role = await interaction.guild.roles.create({
+					name,
+					reason: `LauchManager: auto-created for team "${name}"`,
+				});
+				roleNote = ' (new)';
+			} catch (error) {
+				console.warn(`[createteam] Role could not be created:`, error);
+				await interaction.editReply({ embeds: [makeEmbed('error', 'Role Creation Failed', 'The bot could not create the role — make sure it has the `Manage Roles` permission.')] });
+				return;
+			}
+		}
 
 		const result = await updateStorage((storage) => {
 			const existing = findTeam(storage, name);
@@ -37,7 +57,9 @@ const createTeamCommand: BotCommand = {
 		});
 
 		if (!result.created) {
-			await interaction.editReply({ embeds: [makeEmbed('warning', 'Team existiert bereits', `Das Team \`${result.name}\` ist bereits angelegt.`)] });
+			// Roll back the freshly created role since the team already exists
+			if (roleNote && role) await role.delete('LauchManager: team already existed, rolling back').catch(() => null);
+			await interaction.editReply({ embeds: [makeEmbed('warning', 'Team already exists', `The team \`${result.name}\` is already registered.`)] });
 			return;
 		}
 
@@ -57,21 +79,21 @@ const createTeamCommand: BotCommand = {
 				permissionOverwrites,
 			});
 
-			voiceChannelMention = `\n🔊 Voice-Channel: <#${voiceChannel.id}>`;
+			voiceChannelMention = `\n🔊 Voice channel: <#${voiceChannel.id}>`;
 
 			await updateStorage((storage) => {
 				const t = storage.teams[teamKey(name)];
 				if (t) t.voiceChannelId = voiceChannel.id;
 			});
 		} catch (error) {
-			console.warn(`[createteam] Voice-Channel konnte nicht erstellt werden:`, error);
-			voiceChannelMention = '\n⚠️ Voice-Channel konnte nicht erstellt werden (Berechtigungen pruefen).';
+			console.warn(`[createteam] Voice channel could not be created:`, error);
+			voiceChannelMention = '\n⚠️ Voice channel could not be created — check bot permissions.';
 		}
 
-		const roleMention = role ? `\n🎭 Rolle: <@&${role.id}>` : '';
+		const roleMention = role ? `\n🎭 Role: <@&${role.id}>${roleNote}` : '';
 		await interaction.editReply({
 			embeds: [
-				makeEmbed('success', 'Team angelegt', `\`${result.name}\` wurde angelegt.${roleMention}${voiceChannelMention}\n\nJetzt mit \`/addplayer\` Spieler hinzufuegen.`),
+				makeEmbed('success', 'Team created', `\`${result.name}\` has been set up.${roleMention}${voiceChannelMention}\n\nAdd players with \`/addplayer\`.`),
 			],
 		});
 	},
