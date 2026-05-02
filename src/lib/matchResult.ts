@@ -128,7 +128,7 @@ export function buildMatchResultContainer(
 	if (!winner || !loser) {
 		return new ContainerBuilder()
 			.setAccentColor(0x95a5a6)
-			.addTextDisplayComponents(text(`### Match Result\n\`${matchId}\`\n*Kein eindeutiger Gewinner ermittelt.*`));
+			.addTextDisplayComponents(text(`### Match Result\n\`${matchId}\`\n*No clear winner could be determined.*`));
 	}
 
 	const roundStr = round !== undefined ? `Round ${round}  ·  ` : '';
@@ -226,6 +226,6 @@ export async function postMatchResult(
 			flags: MessageFlags.IsComponentsV2,
 		});
 	} catch (err) {
-		console.warn('[matchResult] Konnte Match-Ergebnis nicht posten:', err);
+		console.warn('[matchResult] Failed to post match result:', err);
 	}
 }

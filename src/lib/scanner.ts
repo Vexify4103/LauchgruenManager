@@ -33,14 +33,14 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
 			return {
 				kind: 'riot-error',
 				message:
-					`Match \`${queriedId}\` wurde von Riot nicht gefunden (404).\n\n` +
-					`Moegliche Ursachen:\n` +
-					`• **Custom Game ohne Tournament Code** — normale Custom Games landen NICHT in der Match-v5 API.\n` +
-					`• **Falsche Region** — der Match-ID-Praefix muss zur Plattform passen (\`EUW1_\`, \`NA1_\`...).\n` +
-					`• **Match zu alt** — Match-v5-Daten haben eine begrenzte Aufbewahrungszeit.`,
+					`Match \`${queriedId}\` was not found by Riot (404).\n\n` +
+					`Possible causes:\n` +
+					`• **Custom Game without Tournament Code** — regular custom games do NOT appear in the Match-v5 API.\n` +
+					`• **Wrong region** — the match ID prefix must match the platform (\`EUW1_\`, \`NA1_\`...).\n` +
+					`• **Match too old** — Match-v5 data has a limited retention period.`,
 			};
 		}
-		const message = error instanceof RiotApiError ? error.message : error instanceof Error ? error.message : 'Unbekannter Fehler';
+		const message = error instanceof RiotApiError ? error.message : error instanceof Error ? error.message : 'Unknown error';
 		return { kind: 'riot-error', message };
 	}
 
@@ -89,7 +89,7 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
 				return {
 					kind: 'filtered-out' as const,
 					matchId: match.metadata.matchId,
-					reason: `Kein Team hat mindestens ${minPlayersPerTeam} Spieler im Match (max: ${maxPlayers}).`,
+					reason: `No team has at least ${minPlayersPerTeam} players in the match (max: ${maxPlayers}).`,
 				};
 			}
 		}
@@ -120,28 +120,28 @@ export function buildScanMessage(outcome: ScanOutcome, options: { origin?: 'manu
 	const { origin = 'manual' } = options;
 
 	if (outcome.kind === 'riot-error') {
-		return { embeds: [makeEmbed('error', 'Match konnte nicht geladen werden', outcome.message)] };
+		return { embeds: [makeEmbed('error', 'Match could not be loaded', outcome.message)] };
 	}
 
 	if (outcome.kind === 'already-scanned') {
 		if (origin === 'auto') return null;
 		return {
-			embeds: [makeEmbed('warning', 'Match bereits gescannt',
-				`\`${outcome.matchId}\` wurde schon verarbeitet. Keine Champions werden erneut hinzugefuegt.\nFalls noetig: Match-ID manuell aus \`storage.json\` entfernen oder \`/resetteam\` nutzen.`)]
+			embeds: [makeEmbed('warning', 'Match already scanned',
+				`\`${outcome.matchId}\` has already been processed. No champions will be added again.\nIf needed: manually remove the match ID from \`storage.json\` or use \`/resetteam\`.`)]
 		};
 	}
 
 	if (outcome.kind === 'no-teams-matched') {
 		if (origin === 'auto') return null;
 		return {
-			embeds: [makeEmbed('warning', 'Keine Teams gefunden',
-				`Kein Spieler aus Match \`${outcome.matchId}\` ist einem registrierten Team zugeordnet.\nErstelle Teams mit \`/createteam\` und \`/addplayer\`.`)]
+			embeds: [makeEmbed('warning', 'No teams found',
+				`No player from match \`${outcome.matchId}\` is assigned to a registered team.\nCreate teams with \`/createteam\` and \`/addplayer\`.`)]
 		};
 	}
 
 	if (outcome.kind === 'filtered-out') {
 		if (origin === 'auto') return null;
-		return { embeds: [makeEmbed('info', 'Match uebersprungen', `\`${outcome.matchId}\`: ${outcome.reason}`)] };
+		return { embeds: [makeEmbed('info', 'Match skipped', `\`${outcome.matchId}\`: ${outcome.reason}`)] };
 	}
 
 	const teamResults: ScanResultTeam[] = outcome.teamResults.map((b) => ({

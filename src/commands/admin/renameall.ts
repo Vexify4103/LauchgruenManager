@@ -7,24 +7,24 @@ import type { BotCommand } from '../../types.js';
 const renameAllCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('renameall')
-		.setDescription('Setzt die Nicknames aller verknuepften Spieler (alle Teams) auf deren Ingame-Namen.')
-		.addBooleanOption((o) => o.setName('confirm').setDescription('Wirklich alle umbenennen?').setRequired(true))
+		.setDescription('Sets the nicknames of all linked players (all teams) to their in-game names.')
+		.addBooleanOption((o) => o.setName('confirm').setDescription('Really rename everyone?').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
 		if (!interaction.options.getBoolean('confirm', true)) {
-			await interaction.reply({ embeds: [makeEmbed('info', 'Abgebrochen', 'Kein Rename durchgefuehrt.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('info', 'Cancelled', 'No rename performed.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
 		const permError = await ensureNicknamePermissions(interaction.guild);
 		if (permError) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Bot-Rechte', permError)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Bot Permissions', permError)], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -45,8 +45,8 @@ const renameAllCommand: BotCommand = {
 			}
 		}
 
-		const summary = `Umbenannt: **${stats.renamed}** · Unveraendert: **${stats.unchanged}** · Fehlgeschlagen: **${stats.failed}**`;
-		await interaction.editReply({ embeds: [makeEmbed('success', 'Alle Nicknames gesetzt', summary)] });
+		const summary = `Renamed: **${stats.renamed}** · Unchanged: **${stats.unchanged}** · Failed: **${stats.failed}**`;
+		await interaction.editReply({ embeds: [makeEmbed('success', 'All nicknames set', summary)] });
 	},
 };
 

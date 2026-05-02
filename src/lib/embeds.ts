@@ -90,8 +90,8 @@ export function buildBannedContainer(teamName: string, playerCount: number, play
 	const sorted = [...playedChampions].sort((a, b) => a.localeCompare(b));
 
 	const header = count === 0
-		? `### 🛡️ ${teamName}\n*Noch keine Champions gesperrt · ${playerCount} Spieler registriert*`
-		: `### 🛡️ ${teamName}\n**${count}** Champion${count === 1 ? '' : 's'} gesperrt · **${playerCount}** Spieler registriert`;
+		? `### 🛡️ ${teamName}\n*No champions banned yet · ${playerCount} players registered*`
+		: `### 🛡️ ${teamName}\n**${count}** champion${count === 1 ? '' : 's'} banned · **${playerCount}** players registered`;
 
 	const container = new ContainerBuilder()
 		.setAccentColor(count === 0 ? ACCENT.success : ACCENT.team)
@@ -139,8 +139,8 @@ export function buildMatchContainer(opts: MatchEmbedOptions): ContainerBuilder {
 	const { matchId, round, teamAName, teamAKey, teamBName, teamBKey, codeAlreadyGenerated } = opts;
 
 	const codeHint = codeAlreadyGenerated
-		? '*Tournament Code wurde bereits generiert — Captain-Button erneut drücken zum Abrufen.*'
-		: '*Nur Team-Captains können den Tournament Code abrufen.*';
+		? '*Tournament code has already been generated — press the captain button again to retrieve it.*'
+		: '*Only team captains can retrieve the tournament code.*';
 
 	const btnA = new ButtonBuilder()
 		.setCustomId(`fearless:code:${matchId}:${teamAKey}`)
@@ -180,7 +180,7 @@ export function buildScanContainer(
 	origin: 'manual' | 'auto'
 ): ContainerBuilder {
 	const hasOrphans = orphans.length > 0;
-	const label = origin === 'auto' ? '🤖 Auto-Scan abgeschlossen' : '✅ Scan abgeschlossen';
+	const label = origin === 'auto' ? '🤖 Auto-scan complete' : '✅ Scan complete';
 
 	const container = new ContainerBuilder()
 		.setAccentColor(hasOrphans ? ACCENT.warning : ACCENT.success)
@@ -192,7 +192,7 @@ export function buildScanContainer(
 			const icon = bucket.newlyAdded.includes(championName) ? '🆕' : '🔁';
 			return `${icon} **${championName}** — ${riotId}`;
 		});
-		const summary = `Neu gesperrt: **${bucket.newlyAdded.length}** · Bereits bekannt: **${bucket.alreadyKnown.length}** · Gesamt: **${bucket.totalBanned}**`;
+		const summary = `Newly banned: **${bucket.newlyAdded.length}** · Already known: **${bucket.alreadyKnown.length}** · Total: **${bucket.totalBanned}**`;
 
 		container
 			.addTextDisplayComponents(text(`**🛡️ ${bucket.teamName}**\n${summary}`))
@@ -203,7 +203,7 @@ export function buildScanContainer(
 	if (hasOrphans) {
 		const lines = orphans.map(({ riotId, championName }) => `• ${championName} — ${riotId}`);
 		container.addTextDisplayComponents(
-			text(`**⚠️ Nicht zugeordnete Spieler**\nDiese Picks wurden **nicht** gespeichert:\n${lines.join('\n')}`)
+			text(`**⚠️ Unmatched players**\nThese picks were **not** saved:\n${lines.join('\n')}`)
 		);
 	}
 

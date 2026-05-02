@@ -15,7 +15,7 @@ function formatUserIdList(label: string, userIds: string[]): string | null {
 	}
 
 	const preview = userIds.slice(0, 20).join(', ');
-	const suffix = userIds.length > 20 ? ` ... (+${userIds.length - 20} weitere)` : '';
+	const suffix = userIds.length > 20 ? ` ... (+${userIds.length - 20} more)` : '';
 
 	return `${label}: ${preview}${suffix}`;
 }
@@ -30,7 +30,7 @@ function buildStopEmbed(
 	status: string,
 	description: string
 ) {
-	const detailLines = [formatUserIdList('Fehlgeschlagen', results.failed)].filter(Boolean) as string[];
+	const detailLines = [formatUserIdList('Failed', results.failed)].filter(Boolean) as string[];
 
 	return createTournamentEmbed({
 		title: 'Tournament Stop',
@@ -39,10 +39,10 @@ function buildStopEmbed(
 		total,
 		status,
 		summaryLines: [
-			`Mitglieder mit Turnierrolle gefunden: ${total}`,
-			`Bereits verarbeitet: ${processed}/${total}`,
-			`Rolle entfernt: ${results.removed.length}`,
-			`Fehlgeschlagen: ${results.failed.length}`,
+			`Members with tournament role found: ${total}`,
+			`Already processed: ${processed}/${total}`,
+			`Role removed: ${results.removed.length}`,
+			`Failed: ${results.failed.length}`,
 		],
 		detailLines,
 	});
@@ -51,19 +51,19 @@ function buildStopEmbed(
 const tournamentStopCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('tournament_stop')
-		.setDescription('Entfernt die Turnierrolle von allen Mitgliedern im Server.')
+		.setDescription('Removes the tournament role from all members in the server.')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Falscher Server',
-					description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
+					title: 'Wrong Server',
+					description: 'This bot is only active for the configured server.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Der Command kann hier nicht verwendet werden.'],
+					status: 'Cancelled',
+					summaryLines: ['This command cannot be used here.'],
 				}))
 			);
 			return;
@@ -72,12 +72,12 @@ const tournamentStopCommand: BotCommand = {
 		if (!hasCommandPermission(interaction.member)) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Fehlende Rechte',
-					description: 'Du darfst diesen Command nicht ausfuehren.',
+					title: 'Missing Permissions',
+					description: 'You are not allowed to run this command.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
+					status: 'Cancelled',
+					summaryLines: ['You need `Manage Server` or `Administrator`.'],
 				}))
 			);
 			return;
@@ -99,11 +99,11 @@ const tournamentStopCommand: BotCommand = {
 			await interaction.editReply(
 				wrapTournament(createTournamentEmbed({
 					title: 'Tournament Stop',
-					description: 'Aktuell hat niemand die Turnierrolle.',
+					description: 'Nobody currently has the tournament role.',
 					processed: 0,
 					total: 0,
-					status: 'Abgeschlossen',
-					summaryLines: ['Es gab nichts zu entfernen.'],
+					status: 'Completed',
+					summaryLines: ['There was nothing to remove.'],
 				}))
 			);
 			return;
@@ -116,7 +116,7 @@ const tournamentStopCommand: BotCommand = {
 
 		const members = [...membersWithRole.values()];
 
-		await interaction.editReply(wrapTournament(buildStopEmbed(0, members.length, results, 'Laeuft', 'Die Turnierrolle wird jetzt Schritt fuer Schritt entfernt.')));
+		await interaction.editReply(wrapTournament(buildStopEmbed(0, members.length, results, 'Running', 'The tournament role is now being removed step by step.')));
 
 		for (const [index, member] of members.entries()) {
 			try {
@@ -132,10 +132,10 @@ const tournamentStopCommand: BotCommand = {
 					index + 1,
 					members.length,
 					results,
-					isLast ? 'Abgeschlossen' : 'Laeuft',
+					isLast ? 'Completed' : 'Running',
 					isLast
-						? 'Die Turnierrolle wurde bei allen gefundenen Mitgliedern verarbeitet.'
-						: `Bearbeite Mitglied ${index + 1} von ${members.length}.`
+						? 'The tournament role has been processed for all found members.'
+						: `Processing member ${index + 1} of ${members.length}.`
 				))
 			);
 

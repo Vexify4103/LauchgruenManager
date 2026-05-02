@@ -8,12 +8,12 @@ export async function ensureTournamentRole(interaction: ChatInputCommandInteract
 	if (!role) {
 		await interaction.editReply(
 			wrapTournament(createTournamentEmbed({
-				title: 'Turnierrolle nicht gefunden',
-				description: `Die Rolle mit der ID \`${config.tournamentRoleId}\` konnte nicht gefunden werden.`,
+				title: 'Tournament role not found',
+				description: `The role with ID \`${config.tournamentRoleId}\` could not be found.`,
 				processed: 0,
 				total: 0,
-				status: 'Fehler',
-				summaryLines: ['Bitte pruefe die Rollen-ID in der `.env`.'],
+				status: 'Error',
+				summaryLines: ['Please check the role ID in the `.env`.'],
 			}))
 		);
 		return null;
@@ -24,12 +24,12 @@ export async function ensureTournamentRole(interaction: ChatInputCommandInteract
 	if (!botMember.permissions.has(PermissionFlagsBits.ManageRoles)) {
 		await interaction.editReply(
 			wrapTournament(createTournamentEmbed({
-				title: 'Fehlende Berechtigung',
-				description: 'Der Bot kann keine Rollen verwalten.',
+				title: 'Missing Permission',
+				description: 'The bot cannot manage roles.',
 				processed: 0,
 				total: 0,
-				status: 'Fehler',
-				summaryLines: ['Dem Bot fehlt die Berechtigung `Manage Roles`.'],
+				status: 'Error',
+				summaryLines: ['The bot is missing the `Manage Roles` permission.'],
 			}))
 		);
 		return null;
@@ -38,12 +38,12 @@ export async function ensureTournamentRole(interaction: ChatInputCommandInteract
 	if (botMember.roles.highest.comparePositionTo(role) <= 0) {
 		await interaction.editReply(
 			wrapTournament(createTournamentEmbed({
-				title: 'Rollenhierarchie ungueltig',
-				description: 'Die Turnierrolle liegt aktuell ueber oder auf Hoehe der Bot-Rolle.',
+				title: 'Invalid role hierarchy',
+				description: 'The tournament role is currently above or at the same level as the bot role.',
 				processed: 0,
 				total: 0,
-				status: 'Fehler',
-				summaryLines: ['Die Bot-Rolle muss in Discord ueber der Turnierrolle stehen.'],
+				status: 'Error',
+				summaryLines: ['The bot role must be above the tournament role in Discord.'],
 			}))
 		);
 		return null;

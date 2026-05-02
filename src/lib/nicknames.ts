@@ -28,7 +28,7 @@ export type RenameResult =
 export async function ensureNicknamePermissions(guild: Guild): Promise<string | null> {
 	const botMember = await guild.members.fetchMe();
 	if (!botMember.permissions.has(BigInt(0x8000000))) {
-		return 'Der Bot hat keine `MANAGE_NICKNAMES`-Berechtigung.';
+		return 'The bot does not have the `MANAGE_NICKNAMES` permission.';
 	}
 	return null;
 }

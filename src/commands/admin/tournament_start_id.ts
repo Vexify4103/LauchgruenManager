@@ -15,7 +15,7 @@ function formatUserIdList(label: string, userIds: string[]): string | null {
 	}
 
 	const preview = userIds.slice(0, 20).join(', ');
-	const suffix = userIds.length > 20 ? ` ... (+${userIds.length - 20} weitere)` : '';
+	const suffix = userIds.length > 20 ? ` ... (+${userIds.length - 20} more)` : '';
 
 	return `${label}: ${preview}${suffix}`;
 }
@@ -32,7 +32,7 @@ function buildStartEmbed(
 	status: string,
 	description: string
 ) {
-	const detailLines = [formatUserIdList('Nicht gefunden', results.notFound), formatUserIdList('Fehlgeschlagen', results.failed)].filter(Boolean) as string[];
+	const detailLines = [formatUserIdList('Not found', results.notFound), formatUserIdList('Failed', results.failed)].filter(Boolean) as string[];
 
 	return createTournamentEmbed({
 		title: 'Tournament Start',
@@ -41,11 +41,11 @@ function buildStartEmbed(
 		total,
 		status,
 		summaryLines: [
-			`Verarbeitete IDs: ${processed}/${total}`,
-			`Rolle vergeben: ${results.added.length}`,
-			`Rolle bereits vorhanden: ${results.alreadyHadRole.length}`,
-			`Nicht im Server gefunden: ${results.notFound.length}`,
-			`Fehlgeschlagen: ${results.failed.length}`,
+			`Processed IDs: ${processed}/${total}`,
+			`Role assigned: ${results.added.length}`,
+			`Role already present: ${results.alreadyHadRole.length}`,
+			`Not found in server: ${results.notFound.length}`,
+			`Failed: ${results.failed.length}`,
 		],
 		detailLines,
 	});
@@ -54,20 +54,20 @@ function buildStartEmbed(
 const tournamentStartCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('tournament_start_id')
-		.setDescription('Vergibt die Turnierrolle an alle User-IDs aus der Rollenliste.')
-		.addStringOption((option) => option.setName('user_id_list').setDescription('Direkter Text oder ein Sourcebin-/Paste-Link mit den User-IDs').setRequired(true))
+		.setDescription('Assigns the tournament role to all user IDs from the role list.')
+		.addStringOption((option) => option.setName('user_id_list').setDescription('Direct text or a Sourcebin/paste link with user IDs').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Falscher Server',
-					description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
+					title: 'Wrong Server',
+					description: 'This bot is only active for the configured server.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Der Command kann hier nicht verwendet werden.'],
+					status: 'Cancelled',
+					summaryLines: ['This command cannot be used here.'],
 				}))
 			);
 			return;
@@ -76,12 +76,12 @@ const tournamentStartCommand: BotCommand = {
 		if (!hasCommandPermission(interaction.member)) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Fehlende Rechte',
-					description: 'Du darfst diesen Command nicht ausfuehren.',
+					title: 'Missing Permissions',
+					description: 'You are not allowed to run this command.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
+					status: 'Cancelled',
+					summaryLines: ['You need `Manage Server` or `Administrator`.'],
 				}))
 			);
 			return;
@@ -89,7 +89,7 @@ const tournamentStartCommand: BotCommand = {
 
 		await interaction.deferReply();
 
-		const userListInput = interaction.options.getString('user_id_liste', true);
+		const userListInput = interaction.options.getString('user_id_list', true);
 
 		try {
 			const content = await loadRoleListInput(userListInput);
@@ -99,11 +99,11 @@ const tournamentStartCommand: BotCommand = {
 				await interaction.editReply(
 					wrapTournament(createTournamentEmbed({
 						title: 'Tournament Start',
-						description: 'Es wurden keine gueltigen Discord-User-IDs gefunden.',
+						description: 'No valid Discord user IDs were found.',
 						processed: 0,
 						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
+						status: 'Cancelled',
+						summaryLines: ['Please check the content of `user_id_list`.'],
 					}))
 				);
 				return;
@@ -122,7 +122,7 @@ const tournamentStartCommand: BotCommand = {
 				failed: [] as string[],
 			};
 
-			await interaction.editReply(wrapTournament(buildStartEmbed(0, userIds.length, results, 'Laeuft', 'Die Turnierrolle wird jetzt Schritt fuer Schritt vergeben.')));
+			await interaction.editReply(wrapTournament(buildStartEmbed(0, userIds.length, results, 'Running', 'The tournament role is now being assigned step by step.')));
 
 			for (const [index, userId] of userIds.entries()) {
 				try {
@@ -150,8 +150,8 @@ const tournamentStartCommand: BotCommand = {
 						index + 1,
 						userIds.length,
 						results,
-						isLast ? 'Abgeschlossen' : 'Läuft',
-						isLast ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${userIds.length}.`
+						isLast ? 'Completed' : 'Running',
+						isLast ? 'The tournament role has been processed for all entries.' : `Processing entry ${index + 1} of ${userIds.length}.`
 					))
 				);
 
@@ -160,16 +160,16 @@ const tournamentStartCommand: BotCommand = {
 				}
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
+			const message = error instanceof Error ? error.message : 'Unknown error';
 
 			await interaction.editReply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Tournament Start fehlgeschlagen',
-					description: 'Beim Verarbeiten der Rollenliste ist ein Fehler aufgetreten.',
+					title: 'Tournament start failed',
+					description: 'An error occurred while processing the role list.',
 					processed: 0,
 					total: 0,
-					status: 'Fehler',
-					summaryLines: [`Fehlermeldung: ${message}`],
+					status: 'Error',
+					summaryLines: [`Error: ${message}`],
 				}))
 			);
 		}

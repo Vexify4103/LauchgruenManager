@@ -7,16 +7,16 @@ import type { BotCommand } from '../../types.js';
 const removePlayerCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('removeplayer')
-		.setDescription('Entfernt einen Spieler aus einem Team.')
-		.addStringOption((o) => o.setName('team').setDescription('Teamname').setRequired(true).setAutocomplete(true))
-		.addStringOption((o) => o.setName('riotid').setDescription('Riot-ID des Spielers').setRequired(true).setAutocomplete(true))
+		.setDescription('Removes a player from a team.')
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('riotid').setDescription("Player's Riot ID").setRequired(true).setAutocomplete(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	autocomplete: handleTeamOrRiotIdAutocomplete,
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -36,13 +36,13 @@ const removePlayerCommand: BotCommand = {
 
 		switch (result.kind) {
 			case 'no-team':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Team nicht gefunden', `Kein Team mit dem Namen \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Team not found', `No team named \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'not-found':
-				await interaction.reply({ embeds: [makeEmbed('warning', 'Spieler nicht gefunden', `\`${riotId}\` ist nicht in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('warning', 'Player not found', `\`${riotId}\` is not on \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'removed':
-				await interaction.reply({ embeds: [makeEmbed('success', 'Spieler entfernt', `\`${result.riotId}\` wurde aus \`${result.team.name}\` entfernt.`)] });
+				await interaction.reply({ embeds: [makeEmbed('success', 'Player removed', `\`${result.riotId}\` has been removed from \`${result.team.name}\`.`)] });
 		}
 	},
 };

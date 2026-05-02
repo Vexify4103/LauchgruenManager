@@ -7,14 +7,14 @@ import { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBu
 const listTeamsCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('listteams')
-		.setDescription('Zeigt alle registrierten Teams und deren Spieler.'),
+		.setDescription('Shows all registered teams and their players.'),
 
 	async execute(interaction) {
 		const storage = await loadStorage();
 		const teams = Object.values(storage.teams);
 
 		if (teams.length === 0) {
-			await interaction.reply({ embeds: [makeEmbed('info', 'Keine Teams', 'Noch keine Teams angelegt. Nutze `/createteam`.')] });
+			await interaction.reply({ embeds: [makeEmbed('info', 'No Teams', 'No teams created yet. Use `/createteam`.')] });
 			return;
 		}
 
@@ -30,10 +30,10 @@ const listTeamsCommand: BotCommand = {
 			const header = `**${team.name}**${roleText}${vcText}`;
 
 			const players = team.players.length === 0
-				? '*Keine Spieler*'
+				? '*No players*'
 				: team.players.map((p) => `\`${p.riotId}\`${p.discordId ? ` <@${p.discordId}>` : ''}`).join(' · ');
 
-			const bans = team.playedChampions.length > 0 ? `\n🚫 Gesperrt: **${team.playedChampions.length}**` : '';
+			const bans = team.playedChampions.length > 0 ? `\n🚫 Banned: **${team.playedChampions.length}**` : '';
 
 			container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`${header}\n${players}${bans}`));
 		}

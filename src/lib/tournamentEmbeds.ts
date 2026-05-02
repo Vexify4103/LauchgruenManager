@@ -21,12 +21,11 @@ function buildProgressText(current: number, total: number): string {
 // ─── Status config ───────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { emoji: string; color: number }> = {
-	Laeuft:        { emoji: '⏳', color: 0x5865f2 },
-	'Läuft':       { emoji: '⏳', color: 0x5865f2 },
-	Abgeschlossen: { emoji: '✅', color: 0x5cb85c },
-	Fehler:        { emoji: '❌', color: 0xd9534f },
-	Abgebrochen:   { emoji: '🚫', color: 0x95a5a6 },
-	Vorbereitung:  { emoji: '🔄', color: 0xf0ad4e },
+	Running:   { emoji: '⏳', color: 0x5865f2 },
+	Completed: { emoji: '✅', color: 0x5cb85c },
+	Error:     { emoji: '❌', color: 0xd9534f },
+	Cancelled: { emoji: '🚫', color: 0x95a5a6 },
+	Preparing: { emoji: '🔄', color: 0xf0ad4e },
 };
 
 // ─── Internal helpers ────────────────────────────────────────────────────────

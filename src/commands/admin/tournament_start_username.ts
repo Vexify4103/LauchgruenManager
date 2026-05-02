@@ -12,27 +12,27 @@ function hasCommandPermission(member: GuildMember): boolean {
 function formatList(label: string, items: string[]): string | null {
 	if (items.length === 0) return null;
 	const preview = items.slice(0, 20).join(', ');
-	const suffix = items.length > 20 ? ` ... (+${items.length - 20} weitere)` : '';
+	const suffix = items.length > 20 ? ` ... (+${items.length - 20} more)` : '';
 	return `${label}: ${preview}${suffix}`;
 }
 
 const tournamentStartUsernameCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('tournament_start_username')
-		.setDescription('Vergibt die Turnierrolle anhand von Discord-Usernamen.')
-		.addStringOption((option) => option.setName('user_name_list').setDescription('Usernamen (eine pro Zeile, Komma- oder Semikolon-getrennt) oder Link').setRequired(true))
+		.setDescription('Assigns the tournament role based on Discord usernames.')
+		.addStringOption((option) => option.setName('user_name_list').setDescription('Usernames (one per line, comma- or semicolon-separated) or link').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Falscher Server',
-					description: 'Dieser Bot ist nur fuer den konfigurierten Server aktiv.',
+					title: 'Wrong Server',
+					description: 'This bot is only active for the configured server.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Der Command kann hier nicht verwendet werden.'],
+					status: 'Cancelled',
+					summaryLines: ['This command cannot be used here.'],
 				}))
 			);
 			return;
@@ -41,12 +41,12 @@ const tournamentStartUsernameCommand: BotCommand = {
 		if (!hasCommandPermission(interaction.member)) {
 			await interaction.reply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Fehlende Rechte',
-					description: 'Du darfst diesen Command nicht ausfuehren.',
+					title: 'Missing Permissions',
+					description: 'You are not allowed to run this command.',
 					processed: 0,
 					total: 0,
-					status: 'Abgebrochen',
-					summaryLines: ['Du brauchst `Manage Server` oder `Administrator`.'],
+					status: 'Cancelled',
+					summaryLines: ['You need `Manage Server` or `Administrator`.'],
 				}))
 			);
 			return;
@@ -54,7 +54,7 @@ const tournamentStartUsernameCommand: BotCommand = {
 
 		await interaction.deferReply();
 
-		const userListInput = interaction.options.getString('user_name_liste', true);
+		const userListInput = interaction.options.getString('user_name_list', true);
 
 		try {
 			const content = await loadRoleListInput(userListInput);
@@ -64,11 +64,11 @@ const tournamentStartUsernameCommand: BotCommand = {
 				await interaction.editReply(
 					wrapTournament(createTournamentEmbed({
 						title: 'Tournament Start (Username)',
-						description: 'Es wurden keine gueltigen Discord-Usernamen gefunden.',
+						description: 'No valid Discord usernames were found.',
 						processed: 0,
 						total: 0,
-						status: 'Abgebrochen',
-						summaryLines: ['Bitte pruefe den Inhalt von `roleliste`.'],
+						status: 'Cancelled',
+						summaryLines: ['Please check the content of `user_name_list`.'],
 					}))
 				);
 				return;
@@ -81,11 +81,11 @@ const tournamentStartUsernameCommand: BotCommand = {
 			await interaction.editReply(
 				wrapTournament(createTournamentEmbed({
 					title: 'Tournament Start (Username)',
-					description: 'Lade Servermitglieder...',
+					description: 'Loading server members...',
 					processed: 0,
 					total: usernames.length,
-					status: 'Vorbereitung',
-					summaryLines: ['Mitgliederliste wird vom Server abgerufen.'],
+					status: 'Preparing',
+					summaryLines: ['Member list is being fetched from the server.'],
 				}))
 			);
 
@@ -119,21 +119,21 @@ const tournamentStartUsernameCommand: BotCommand = {
 				}
 
 				const isLast = index + 1 === usernames.length;
-				const detailLines = [formatList('Nicht gefunden', results.notFound), formatList('Fehlgeschlagen', results.failed)].filter(Boolean) as string[];
+				const detailLines = [formatList('Not found', results.notFound), formatList('Failed', results.failed)].filter(Boolean) as string[];
 
 				await interaction.editReply(
 					wrapTournament(createTournamentEmbed({
 						title: 'Tournament Start (Username)',
-						description: isLast ? 'Die Turnierrolle wurde fuer alle Eintraege verarbeitet.' : `Bearbeite Eintrag ${index + 1} von ${usernames.length}.`,
+						description: isLast ? 'The tournament role has been processed for all entries.' : `Processing entry ${index + 1} of ${usernames.length}.`,
 						processed: index + 1,
 						total: usernames.length,
-						status: isLast ? 'Abgeschlossen' : 'Laeuft',
+						status: isLast ? 'Completed' : 'Running',
 						summaryLines: [
-							`Verarbeitete Usernamen: ${index + 1}/${usernames.length}`,
-							`Rolle vergeben: ${results.added.length}`,
-							`Rolle bereits vorhanden: ${results.alreadyHadRole.length}`,
-							`Nicht im Server gefunden: ${results.notFound.length}`,
-							`Fehlgeschlagen: ${results.failed.length}`,
+							`Processed usernames: ${index + 1}/${usernames.length}`,
+							`Role assigned: ${results.added.length}`,
+							`Role already present: ${results.alreadyHadRole.length}`,
+							`Not found in server: ${results.notFound.length}`,
+							`Failed: ${results.failed.length}`,
 						],
 						detailLines,
 					}))
@@ -143,15 +143,15 @@ const tournamentStartUsernameCommand: BotCommand = {
 				if (!isLast && madeApiCall) await wait(ROLE_ACTION_DELAY_MS);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
+			const message = error instanceof Error ? error.message : 'Unknown error';
 			await interaction.editReply(
 				wrapTournament(createTournamentEmbed({
-					title: 'Tournament Start fehlgeschlagen',
-					description: 'Beim Verarbeiten der Usernamen ist ein Fehler aufgetreten.',
+					title: 'Tournament start failed',
+					description: 'An error occurred while processing the usernames.',
 					processed: 0,
 					total: 0,
-					status: 'Fehler',
-					summaryLines: [`Fehlermeldung: ${message}`],
+					status: 'Error',
+					summaryLines: [`Error: ${message}`],
 				}))
 			);
 		}

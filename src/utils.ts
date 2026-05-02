@@ -19,7 +19,7 @@ async function fetchSourcebinText(sourcebinKey: string): Promise<string> {
 	});
 
 	if (!metadataResponse.ok) {
-		throw new Error(`Konnte Sourcebin-Metadaten nicht laden (${metadataResponse.status} ${metadataResponse.statusText}).`);
+		throw new Error(`Failed to load Sourcebin metadata (${metadataResponse.status} ${metadataResponse.statusText}).`);
 	}
 
 	const metadata = (await metadataResponse.json()) as {
@@ -29,7 +29,7 @@ async function fetchSourcebinText(sourcebinKey: string): Promise<string> {
 	const fileCount = metadata.files?.length ?? 0;
 
 	if (fileCount === 0) {
-		throw new Error('In diesem Sourcebin wurden keine Dateien gefunden.');
+		throw new Error('No files were found in this Sourcebin.');
 	}
 
 	const contents = await Promise.all(
@@ -42,7 +42,7 @@ async function fetchSourcebinText(sourcebinKey: string): Promise<string> {
 			});
 
 			if (!rawResponse.ok) {
-				throw new Error(`Konnte Sourcebin-Datei ${index} nicht laden (${rawResponse.status} ${rawResponse.statusText}).`);
+				throw new Error(`Failed to load Sourcebin file ${index} (${rawResponse.status} ${rawResponse.statusText}).`);
 			}
 
 			return rawResponse.text();
@@ -55,7 +55,7 @@ async function fetchSourcebinText(sourcebinKey: string): Promise<string> {
 		.join('\n');
 
 	if (!combined) {
-		throw new Error('Im Sourcebin-Inhalt wurde kein lesbarer Text gefunden.');
+		throw new Error('No readable text was found in the Sourcebin content.');
 	}
 
 	return combined;
@@ -76,7 +76,7 @@ async function fetchTextFromUrl(url: string): Promise<string> {
 	});
 
 	if (!response.ok) {
-		throw new Error(`Konnte Link nicht laden (${response.status} ${response.statusText}).`);
+		throw new Error(`Failed to load link (${response.status} ${response.statusText}).`);
 	}
 
 	return response.text();

@@ -70,15 +70,15 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 	async execute(client) {
 		try {
 			await deployGuildCommands();
-			console.log(`Aktive Ziel-Guild: ${config.guildId}`);
-			console.log('Guild-Slashcommands wurden beim Start synchronisiert.');
-			console.log(`Bot eingeloggt als ${client.user?.tag ?? 'unbekannt'}`);
+			console.log(`Active target guild: ${config.guildId}`);
+			console.log('Guild slash commands synced on startup.');
+			console.log(`Bot logged in as ${client.user?.tag ?? 'unknown'}`);
 
 			await loadStorage();
 			await recoverQueue(client);
 			startAutoscan(client);
 
-			logInfo(client, '🟢 Bot gestartet', `Eingeloggt als **${client.user?.tag ?? '?'}** · Autoscan: **${config.autoscanEnabled ? 'an' : 'aus'}**`);
+			logInfo(client, '🟢 Bot started', `Logged in as **${client.user?.tag ?? '?'}** · Autoscan: **${config.autoscanEnabled ? 'on' : 'off'}**`);
 
 			client.user?.setPresence({
 				status: 'online',
@@ -90,7 +90,7 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 				],
 			});
 		} catch (error) {
-			console.error('Fehler beim Synchronisieren der Guild-Slashcommands:', error);
+			console.error('Error syncing guild slash commands:', error);
 			process.exitCode = 1;
 		}
 	},

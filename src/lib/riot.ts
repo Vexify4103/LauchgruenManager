@@ -26,12 +26,12 @@ async function riotGet<T>(url: string): Promise<T> {
 
 		const message =
 			response.status === 401 || response.status === 403
-				? 'Riot API Key ist ungueltig oder abgelaufen.'
+				? 'Riot API key is invalid or expired.'
 				: response.status === 404
-					? 'Ressource bei Riot nicht gefunden.'
+					? 'Resource not found at Riot.'
 					: response.status === 429
-						? 'Riot API Rate Limit erreicht — bitte kurz warten.'
-						: `Riot API Fehler ${response.status}${detail ? `: ${detail}` : ''}`;
+						? 'Riot API rate limit reached — please wait a moment.'
+						: `Riot API error ${response.status}${detail ? `: ${detail}` : ''}`;
 
 		throw new RiotApiError(response.status, url, message);
 	}
@@ -59,8 +59,8 @@ async function riotPost<T>(url: string, body: unknown): Promise<T> {
 		}
 		const message =
 			response.status === 401 || response.status === 403
-				? 'Riot API Key ist ungueltig oder abgelaufen (oder fehlende Tournament-API-Berechtigung).'
-				: `Riot API Fehler ${response.status}${detail ? `: ${detail}` : ''}`;
+				? 'Riot API key is invalid or expired (or missing tournament API permission).'
+				: `Riot API error ${response.status}${detail ? `: ${detail}` : ''}`;
 		throw new RiotApiError(response.status, url, message);
 	}
 
@@ -85,7 +85,7 @@ export function parseRiotId(input: string): { gameName: string; tagLine: string 
 	const trimmed = sanitizeRiotId(input);
 	const hashIndex = trimmed.lastIndexOf('#');
 	if (hashIndex === -1 || hashIndex === trimmed.length - 1 || hashIndex === 0) {
-		throw new Error(`Ungueltige Riot ID "${input}". Erwartet: Name#Tag`);
+		throw new Error(`Invalid Riot ID "${input}". Expected format: Name#Tag`);
 	}
 	return { gameName: trimmed.slice(0, hashIndex), tagLine: trimmed.slice(hashIndex + 1) };
 }
@@ -94,7 +94,7 @@ export function normalizeMatchId(input: string): string {
 	const cleaned = input.trim();
 	if (/^[A-Z0-9]+_\d+$/.test(cleaned)) return cleaned;
 	if (/^\d+$/.test(cleaned)) return `${config.riotPlatform}_${cleaned}`;
-	throw new Error(`Ungueltige Match-ID "${input}". Erwartet z.B. EUW1_1234567890 oder nur die Zahl.`);
+	throw new Error(`Invalid match ID "${input}". Expected e.g. EUW1_1234567890 or just the number.`);
 }
 
 export async function resolveRiotId(riotId: string): Promise<RiotAccount> {

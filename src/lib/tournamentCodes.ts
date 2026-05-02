@@ -11,13 +11,13 @@ async function ensureTournamentInStorage(storage: Storage): Promise<number> {
 
 	let providerId = storage.tournament.providerId;
 	if (providerId === undefined) {
-		console.log('[tournament] Erstelle Provider...');
+		console.log('[tournament] Creating provider...');
 		providerId = await createTournamentProvider(config.tournamentCallbackUrl);
 		storage.tournament.providerId = providerId;
 		console.log(`[tournament] Provider ID: ${providerId}`);
 	}
 
-	console.log('[tournament] Erstelle Tournament...');
+	console.log('[tournament] Creating tournament...');
 	const tournamentId = await createTournament(providerId, 'Fearless Tournament');
 	storage.tournament.tournamentId = tournamentId;
 	console.log(`[tournament] Tournament ID: ${tournamentId}`);
@@ -29,7 +29,7 @@ async function ensureTournamentInStorage(storage: Storage): Promise<number> {
 export async function getOrCreateMatchCode(matchId: string, allowedPuuids: string[]): Promise<string> {
 	return updateStorage(async (storage) => {
 		const match = storage.tournament.matches.find((m) => m.id === matchId);
-		if (!match) throw new Error(`Match "${matchId}" nicht in storage gefunden.`);
+		if (!match) throw new Error(`Match "${matchId}" not found in storage.`);
 
 		if (match.tournamentCode) return match.tournamentCode;
 
@@ -43,7 +43,7 @@ export async function getOrCreateMatchCode(matchId: string, allowedPuuids: strin
 		});
 
 		const code = codes[0];
-		if (!code) throw new Error('Riot API hat keinen Tournament Code zurueckgegeben.');
+		if (!code) throw new Error('Riot API did not return a tournament code.');
 
 		match.tournamentCode = code;
 		return code;

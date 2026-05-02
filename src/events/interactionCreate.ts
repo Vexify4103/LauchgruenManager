@@ -40,7 +40,7 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 			// Check captain role
 			if (!interaction.member.roles.cache.has(config.captainRoleId)) {
 				await interaction.reply({
-					embeds: [makeEmbed('error', 'Keine Berechtigung', 'Nur Team-Captains können den Tournament Code abrufen.')],
+					embeds: [makeEmbed('error', 'No Permission', 'Only team captains can retrieve the tournament code.')],
 					flags: MessageFlags.Ephemeral,
 				});
 				return;
@@ -50,7 +50,7 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 			const match = storage.tournament.matches.find((m) => m.id === matchId);
 			if (!match) {
 				await interaction.reply({
-					embeds: [makeEmbed('error', 'Match nicht gefunden', `Match \`${matchId}\` ist nicht in der Datenbank.`)],
+					embeds: [makeEmbed('error', 'Match not found', `Match \`${matchId}\` is not in the database.`)],
 					flags: MessageFlags.Ephemeral,
 				});
 				return;
@@ -63,7 +63,7 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 				const isInTeam = clickedTeam.players.some((p) => p.discordId === interaction.user.id);
 				if (hasLinkedPlayers && !isInTeam) {
 					await interaction.reply({
-						embeds: [makeEmbed('error', 'Falsches Team', `Du bist nicht als Spieler in **${clickedTeam.name}** eingetragen.`)],
+						embeds: [makeEmbed('error', 'Wrong Team', `You are not registered as a player in **${clickedTeam.name}**.`)],
 						flags: MessageFlags.Ephemeral,
 					});
 					return;
@@ -88,7 +88,7 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 						makeEmbed(
 							'success',
 							'🏆 Tournament Code',
-							`**${teamDisplay}** — Runde ${match.round}\n\n\`\`\`\n${code}\n\`\`\`\n*Im League-Client: Custom Game → Tournament Code eingeben.*`
+							`**${teamDisplay}** — Round ${match.round}\n\n\`\`\`\n${code}\n\`\`\`\n*In League Client: Custom Game → Enter Tournament Code.*`
 						),
 					],
 				});
@@ -113,12 +113,12 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 							}
 						}
 					} catch (err) {
-						console.warn('[button] Match-Embed konnte nicht aktualisiert werden:', err);
+						console.warn('[button] Failed to update match embed:', err);
 					}
 				}
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
-				await interaction.editReply({ embeds: [makeEmbed('error', 'Fehler beim Code-Generieren', message)] });
+				await interaction.editReply({ embeds: [makeEmbed('error', 'Error generating code', message)] });
 			}
 			return;
 		}
@@ -128,14 +128,14 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 
 		if (!interaction.inCachedGuild()) {
 			if (interaction.isRepliable()) {
-				await interaction.reply({ content: 'Guild-Kontext konnte nicht geladen werden.', flags: MessageFlags.Ephemeral });
+				await interaction.reply({ content: 'Guild context could not be loaded.', flags: MessageFlags.Ephemeral });
 			}
 			return;
 		}
 
 		const command = client.commands.get(interaction.commandName);
 		if (!command) {
-			await interaction.reply({ content: 'Dieser Command ist nicht registriert.', flags: MessageFlags.Ephemeral });
+			await interaction.reply({ content: 'This command is not registered.', flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -146,10 +146,10 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 			console.error(`[interaction] /${interaction.commandName}:`, error);
 			logCommand(client, interaction, error);
 			if (interaction.deferred || interaction.replied) {
-				await interaction.editReply('Beim Ausfuehren des Commands ist ein Fehler aufgetreten.');
+				await interaction.editReply('An error occurred while executing the command.');
 				return;
 			}
-			await interaction.reply({ content: 'Beim Ausfuehren des Commands ist ein Fehler aufgetreten.', flags: MessageFlags.Ephemeral });
+			await interaction.reply({ content: 'An error occurred while executing the command.', flags: MessageFlags.Ephemeral });
 		}
 	},
 };

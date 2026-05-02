@@ -7,8 +7,8 @@ import type { BotCommand } from '../../types.js';
 const resetTeamCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('resetteam')
-		.setDescription('Setzt die Fearless-Liste eines Teams zurueck (loescht alle gesperrten Champions).')
-		.addStringOption((o) => o.setName('team').setDescription('Teamname').setRequired(true).setAutocomplete(true))
+		.setDescription("Resets a team's Fearless list (clears all banned champions).")
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async autocomplete(interaction) {
@@ -19,7 +19,7 @@ const resetTeamCommand: BotCommand = {
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -34,11 +34,11 @@ const resetTeamCommand: BotCommand = {
 		});
 
 		if (result.kind === 'no-team') {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Team nicht gefunden', `Kein Team \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Team not found', `No team named \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
-		await interaction.reply({ embeds: [makeEmbed('success', 'Liste zurueckgesetzt', `Fearless-Liste von \`${result.team.name}\` geleert (${result.count} Champions entfernt).`)] });
+		await interaction.reply({ embeds: [makeEmbed('success', 'List reset', `Fearless list for \`${result.team.name}\` cleared (${result.count} champions removed).`)] });
 	},
 };
 

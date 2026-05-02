@@ -17,6 +17,6 @@ client.commands = createCommandCollection();
 registerEvents(client);
 
 client.login(config.token).catch((error) => {
-	console.error('Login fehlgeschlagen:', error);
+	console.error('Login failed:', error);
 	process.exitCode = 1;
 });

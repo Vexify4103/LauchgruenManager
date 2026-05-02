@@ -7,17 +7,17 @@ import type { BotCommand } from '../../types.js';
 const linkDiscordCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('linkdiscord')
-		.setDescription('Verknuepft einen Discord-User mit einem registrierten Spieler.')
-		.addStringOption((o) => o.setName('team').setDescription('Teamname').setRequired(true).setAutocomplete(true))
-		.addStringOption((o) => o.setName('riotid').setDescription('Riot-ID des Spielers').setRequired(true).setAutocomplete(true))
-		.addUserOption((o) => o.setName('member').setDescription('Discord-User').setRequired(true))
+		.setDescription('Links a Discord user to a registered player.')
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('riotid').setDescription("Player's Riot ID").setRequired(true).setAutocomplete(true))
+		.addUserOption((o) => o.setName('member').setDescription('Discord user').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	autocomplete: handleTeamOrRiotIdAutocomplete,
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -45,17 +45,17 @@ const linkDiscordCommand: BotCommand = {
 
 		switch (result.kind) {
 			case 'no-team':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Team nicht gefunden', `Kein Team \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Team not found', `No team named \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'no-player':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Spieler nicht gefunden', `\`${riotId}\` nicht in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Player not found', `\`${riotId}\` not in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'discord-claimed':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Discord-User schon vergeben', `<@${discordUser.id}> ist bereits mit \`${result.claimRiotId}\` in \`${result.claimTeam.name}\` verknuepft.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Discord user already taken', `<@${discordUser.id}> is already linked to \`${result.claimRiotId}\` in \`${result.claimTeam.name}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'linked': {
-				const prev = result.previous ? ` (vorher: <@${result.previous}>)` : '';
-				await interaction.reply({ embeds: [makeEmbed('success', 'Verknuepfung gesetzt', `\`${result.player.riotId}\` → <@${discordUser.id}>${prev}`)] });
+				const prev = result.previous ? ` (previously: <@${result.previous}>)` : '';
+				await interaction.reply({ embeds: [makeEmbed('success', 'Link set', `\`${result.player.riotId}\` → <@${discordUser.id}>${prev}`)] });
 			}
 		}
 	},

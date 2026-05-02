@@ -7,8 +7,8 @@ import type { BotCommand } from '../../types.js';
 const bannedCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('banned')
-		.setDescription('Zeigt alle gesperrten Champions eines Teams (Fearless-Liste).')
-		.addStringOption((o) => o.setName('team').setDescription('Teamname').setRequired(true).setAutocomplete(true)),
+		.setDescription('Shows all banned champions of a team (Fearless list).')
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true)),
 
 	async autocomplete(interaction) {
 		const focused = interaction.options.getFocused(true);
@@ -23,7 +23,7 @@ const bannedCommand: BotCommand = {
 
 		if (!team) {
 			await interaction.reply({
-				embeds: [makeEmbed('error', 'Team nicht gefunden', `Kein Team mit dem Namen \`${teamName}\`.`)],
+				embeds: [makeEmbed('error', 'Team not found', `No team named \`${teamName}\`.`)],
 				flags: MessageFlags.Ephemeral,
 			});
 			return;

@@ -7,16 +7,16 @@ import type { BotCommand } from '../../types.js';
 const unlinkDiscordCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('unlinkdiscord')
-		.setDescription('Entfernt die Discord-Verknuepfung eines Spielers.')
-		.addStringOption((o) => o.setName('team').setDescription('Teamname').setRequired(true).setAutocomplete(true))
-		.addStringOption((o) => o.setName('riotid').setDescription('Riot-ID des Spielers').setRequired(true).setAutocomplete(true))
+		.setDescription("Removes the Discord link of a player.")
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('riotid').setDescription("Player's Riot ID").setRequired(true).setAutocomplete(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	autocomplete: handleTeamOrRiotIdAutocomplete,
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -38,16 +38,16 @@ const unlinkDiscordCommand: BotCommand = {
 
 		switch (result.kind) {
 			case 'no-team':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Team nicht gefunden', `Kein Team \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Team not found', `No team named \`${teamName}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'no-player':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Spieler nicht gefunden', `\`${riotId}\` nicht in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('error', 'Player not found', `\`${riotId}\` not in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'not-linked':
-				await interaction.reply({ embeds: [makeEmbed('warning', 'Nicht verknuepft', `\`${result.riotId}\` hat keine Discord-Verknuepfung.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({ embeds: [makeEmbed('warning', 'Not linked', `\`${result.riotId}\` has no Discord link.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'unlinked':
-				await interaction.reply({ embeds: [makeEmbed('success', 'Verknuepfung entfernt', `\`${result.riotId}\` ist jetzt von <@${result.previous}> getrennt.`)] });
+				await interaction.reply({ embeds: [makeEmbed('success', 'Link removed', `\`${result.riotId}\` has been unlinked from <@${result.previous}>.`)] });
 		}
 	},
 };

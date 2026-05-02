@@ -6,18 +6,18 @@ import type { BotCommand } from '../../types.js';
 const resetAllCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('resetall')
-		.setDescription('Setzt alle Fearless-Listen und gescannten Matches zurueck.')
-		.addBooleanOption((o) => o.setName('confirm').setDescription('Sicher? Das kann nicht rueckgaengig gemacht werden.').setRequired(true))
+		.setDescription('Resets all Fearless lists and scanned matches.')
+		.addBooleanOption((o) => o.setName('confirm').setDescription('Are you sure? This cannot be undone.').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
 		if (!interaction.options.getBoolean('confirm', true)) {
-			await interaction.reply({ embeds: [makeEmbed('info', 'Abgebrochen', 'Kein Reset durchgefuehrt.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('info', 'Cancelled', 'No reset performed.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -32,7 +32,7 @@ const resetAllCommand: BotCommand = {
 			return count;
 		});
 
-		await interaction.reply({ embeds: [makeEmbed('success', 'Alles zurueckgesetzt', `Fearless-Listen aller ${teamCount} Teams geleert, alle Matches-Daten zurueckgesetzt.`)] });
+		await interaction.reply({ embeds: [makeEmbed('success', 'Everything reset', `Fearless lists cleared for all ${teamCount} teams, all match data reset.`)] });
 	},
 };
 

@@ -8,13 +8,13 @@ import type { BotCommand } from '../../types.js';
 const scanGameCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('scangame')
-		.setDescription('Scannt ein Match und sperrt gespielte Champions (Fearless).')
-		.addStringOption((o) => o.setName('id').setDescription('Match-ID, z.B. EUW1_1234567890 oder nur die Zahl').setRequired(true))
+		.setDescription('Scans a match and bans played champions (Fearless).')
+		.addStringOption((o) => o.setName('id').setDescription('Match ID, e.g. EUW1_1234567890 or just the number').setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -24,7 +24,7 @@ const scanGameCommand: BotCommand = {
 		try {
 			matchId = normalizeMatchId(rawId);
 		} catch (error) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Ungueltige Match-ID', error instanceof Error ? error.message : String(error))], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Invalid match ID', error instanceof Error ? error.message : String(error))], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -34,7 +34,7 @@ const scanGameCommand: BotCommand = {
 		const msg = buildScanMessage(outcome, { origin: 'manual' });
 
 		if (!msg) {
-			await interaction.editReply({ embeds: [makeEmbed('info', 'Nichts zu tun', 'Das Match wurde bereits verarbeitet.')] });
+			await interaction.editReply({ embeds: [makeEmbed('info', 'Nothing to do', 'This match has already been processed.')] });
 			return;
 		}
 
@@ -48,7 +48,7 @@ const scanGameCommand: BotCommand = {
 		}
 
 		if (outcome.kind === 'success') {
-			console.log(`[scangame] ${outcome.matchId} verarbeitet. Teams: ${outcome.teamResults.map((b) => b.team.name).join(', ')}`);
+			console.log(`[scangame] ${outcome.matchId} processed. Teams: ${outcome.teamResults.map((b) => b.team.name).join(', ')}`);
 			void postMatchResult(interaction.client, outcome);
 		}
 	},

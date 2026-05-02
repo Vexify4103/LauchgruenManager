@@ -58,7 +58,7 @@ async function resolveNotificationChannel(client: Client): Promise<TextChannel |
 }
 
 export async function runOnePoll(client: Client): Promise<{ processed: number; newMatches: string[]; errors: string[] }> {
-	if (state.running) return { processed: 0, newMatches: [], errors: ['Ein Poll laeuft bereits.'] };
+	if (state.running) return { processed: 0, newMatches: [], errors: ['A poll is already running.'] };
 	state.running = true;
 	const errors: string[] = [];
 	const newMatches: string[] = [];
@@ -99,7 +99,7 @@ export async function runOnePoll(client: Client): Promise<{ processed: number; n
 						const msg = buildScanMessage(outcome, { origin: 'auto' });
 						if (msg) {
 							await channel.send(msg as Parameters<typeof channel.send>[0]).catch((err: unknown) => {
-								console.warn('[autoscan] Konnte Ergebnis nicht posten:', err);
+								console.warn('[autoscan] Failed to post result:', err);
 							});
 						}
 					}
@@ -120,18 +120,18 @@ export async function runOnePoll(client: Client): Promise<{ processed: number; n
 }
 
 export function startAutoscan(client: Client): void {
-	if (!state.enabled) { console.log('[autoscan] Deaktiviert.'); return; }
+	if (!state.enabled) { console.log('[autoscan] Disabled.'); return; }
 	if (state.timer) return;
-	console.log(`[autoscan] Startet alle ${Math.round(state.intervalMs / 1000)}s.`);
+	console.log(`[autoscan] Starting every ${Math.round(state.intervalMs / 1000)}s.`);
 
 	state.timer = setTimeout(function recur() {
 		void runOnePoll(client)
 			.then(({ newMatches, errors }) => {
-				if (newMatches.length > 0) console.log(`[autoscan] ${newMatches.length} neue Matches: ${newMatches.join(', ')}`);
-				if (errors.length > 0) console.warn('[autoscan] Fehler:', errors.slice(0, 3));
+				if (newMatches.length > 0) console.log(`[autoscan] ${newMatches.length} new match(es): ${newMatches.join(', ')}`);
+				if (errors.length > 0) console.warn('[autoscan] Errors:', errors.slice(0, 3));
 			})
 			.catch((err: unknown) => {
-				console.error('[autoscan] Unerwarteter Fehler:', err);
+				console.error('[autoscan] Unexpected error:', err);
 				state.lastPollError = err instanceof Error ? err.message : String(err);
 			})
 			.finally(() => { state.timer = setTimeout(recur, state.intervalMs); });

@@ -8,10 +8,10 @@ import type { BotCommand, StoredMatch } from '../../types.js';
 const startMatchCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('startmatch')
-		.setDescription('Startet ein Match und postet ein Embed mit Tournament-Code-Buttons im Matches-Channel.')
-		.addIntegerOption((o) => o.setName('round').setDescription('Rundennummer, z.B. 1').setRequired(true).setMinValue(1))
-		.addStringOption((o) => o.setName('team_a').setDescription('Erstes Team').setRequired(true).setAutocomplete(true))
-		.addStringOption((o) => o.setName('team_b').setDescription('Zweites Team').setRequired(true).setAutocomplete(true))
+		.setDescription('Starts a match and posts an embed with tournament code buttons in the matches channel.')
+		.addIntegerOption((o) => o.setName('round').setDescription('Round number, e.g. 1').setRequired(true).setMinValue(1))
+		.addStringOption((o) => o.setName('team_a').setDescription('First team').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('team_b').setDescription('Second team').setRequired(true).setAutocomplete(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async autocomplete(interaction) {
@@ -25,7 +25,7 @@ const startMatchCommand: BotCommand = {
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Fehlende Rechte', 'Du brauchst `Manage Server` oder `Administrator`.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Missing Permissions', 'You need `Manage Server` or `Administrator`.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -38,15 +38,15 @@ const startMatchCommand: BotCommand = {
 		const teamB = findTeam(storage, teamBName);
 
 		if (!teamA) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Team A nicht gefunden', `Kein Team namens \`${teamAName}\`.`)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Team A not found', `No team named \`${teamAName}\`.`)], flags: MessageFlags.Ephemeral });
 			return;
 		}
 		if (!teamB) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Team B nicht gefunden', `Kein Team namens \`${teamBName}\`.`)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Team B not found', `No team named \`${teamBName}\`.`)], flags: MessageFlags.Ephemeral });
 			return;
 		}
 		if (teamA.name === teamB.name) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Gleiches Team', 'Team A und Team B duerfen nicht identisch sein.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Same team', 'Team A and Team B cannot be the same.')], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -59,7 +59,7 @@ const startMatchCommand: BotCommand = {
 			targetChannel = null;
 		}
 		if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Matches-Channel nicht gefunden', `Channel \`${channelId}\` nicht gefunden oder kein Text-Channel. Setze \`MATCHES_CHANNEL_ID\` in der .env.`)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({ embeds: [makeEmbed('error', 'Matches channel not found', `Channel \`${channelId}\` not found or not a text channel. Set \`MATCHES_CHANNEL_ID\` in the .env.`)], flags: MessageFlags.Ephemeral });
 			return;
 		}
 
@@ -104,7 +104,7 @@ const startMatchCommand: BotCommand = {
 		});
 
 		await interaction.editReply({
-			embeds: [makeEmbed('success', 'Match gestartet', `Runde ${round}: **${teamA.name}** vs **${teamB.name}**\n📍 Embed gepostet in <#${channelId}>`)],
+			embeds: [makeEmbed('success', 'Match started', `Round ${round}: **${teamA.name}** vs **${teamB.name}**\n📍 Embed posted in <#${channelId}>`)],
 		});
 	},
 };
