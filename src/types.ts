@@ -61,10 +61,25 @@ export type TournamentData = {
 	name?: string;
 };
 
+export type QueueEntry = {
+	userId: string;
+	/** Nickname before the bot renamed them; null means they had none. */
+	originalNickname: string | null;
+	/** The name shown after "#N | " — captured at join time. */
+	displayName: string;
+	joinedAt: number;
+};
+
+export type WaitingQueue = {
+	channelId: string;
+	entries: QueueEntry[];
+};
+
 export type Storage = {
 	teams: Record<string, StoredTeam>;
 	scannedMatches: string[];
 	tournament: TournamentData;
+	waitingQueue?: WaitingQueue;
 };
 
 export type RiotAccount = {

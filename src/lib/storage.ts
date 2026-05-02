@@ -27,6 +27,7 @@ async function readFromDisk(): Promise<Storage> {
 				mode: t?.mode,
 				name: t?.name,
 			},
+			waitingQueue: parsed.waitingQueue,
 		};
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code === 'ENOENT') {

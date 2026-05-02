@@ -6,7 +6,7 @@ import { loadStorage } from './lib/storage.js';
 import { BotClient } from './types.js';
 
 const client = new BotClient({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates],
 });
 
 await loadStorage();
