@@ -3,4 +3,4 @@ dist/
 .env
 
 # Claude Code worktrees (temporary, never commit)
-.claude/worktrees/
+.claude/worktrees/*

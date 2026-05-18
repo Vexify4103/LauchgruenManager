@@ -21,6 +21,39 @@ export type StoredPlayer = {
 	riotId: string;
 	puuid: string;
 	discordId?: string;
+	/** Preferred lane/role for the public team card. Pulled from the player's web application. */
+	role?: 'Top' | 'Jungle' | 'Mid' | 'Bot' | 'Support' | 'Fill' | 'Sub';
+};
+
+/**
+ * Reference to a verified Riot/Discord account, snapshotted at assignment
+ * time so the team card keeps working even if the user later unlinks their
+ * Riot account on the Web app.
+ */
+export type TeamCaptain = {
+	discordId: string;
+	discordUsername?: string;
+	riotId: string;
+	puuid: string;
+	assignedAt: string;
+};
+
+/**
+ * Web-tournament metadata for a team. The bot itself doesn't use any of this
+ * (it just stores it alongside the team) — it's read by the Web app to render
+ * the public tournament pages (groups, bracket, OBS overlay).
+ *
+ * If unset, the Web app falls back to sensible defaults.
+ */
+export type TeamMeta = {
+	/** Group letter for the round-robin stage. */
+	group?: 'A' | 'B';
+	/** Seed within the group (1..4). */
+	seed?: number;
+	/** Tailwind gradient classes for the team accent stripe. */
+	accent?: string;
+	/** Captain — references a verified Riot account from the Web app. */
+	captain?: TeamCaptain;
 };
 
 export type StoredTeam = {
@@ -31,6 +64,8 @@ export type StoredTeam = {
 	roleId?: string;
 	/** Voice channel ID created for this team. */
 	voiceChannelId?: string;
+	/** Optional tournament metadata used by the Web app. Set via admin tooling. */
+	meta?: TeamMeta;
 };
 
 /** A single scheduled match within a round. */

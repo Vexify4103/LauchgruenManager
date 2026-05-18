@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { resolve } from 'path';
 
 dotenv.config();
 
@@ -29,8 +28,6 @@ export const config = {
 	riotApiKey: getEnv('RIOT_API_KEY'),
 	riotPlatform: process.env.RIOT_PLATFORM ?? 'EUW1',
 	riotRegion: process.env.RIOT_REGION ?? 'europe',
-	storagePath: resolve(process.cwd(), process.env.STORAGE_PATH ?? 'data/storage.json'),
-
 	autoscanEnabled: getBool('AUTOSCAN_ENABLED', false),
 	autoscanIntervalSec: getInt('AUTOSCAN_INTERVAL_SEC', 120),
 	autoscanMinPlayersPerTeam: getInt('AUTOSCAN_MIN_PLAYERS_PER_TEAM', 5),

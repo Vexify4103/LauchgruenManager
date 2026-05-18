@@ -1,5 +1,6 @@
 import type { AutocompleteInteraction } from 'discord.js';
 import { findTeam, loadStorage } from './storage.js';
+import { listVerifiedAccounts } from './verifiedAccounts.js';
 
 const LIMIT = 25;
 const NAME_MAX = 100;
@@ -46,6 +47,47 @@ export async function suggestRiotIds(interaction: AutocompleteInteraction<'cache
 		sorted.slice(0, LIMIT).map((e) => ({
 			name: clip(team ? e.riotId : `${e.riotId}  ·  ${e.teamName}`),
 			value: clip(e.riotId),
+		}))
+	);
+}
+
+/**
+ * Suggests Discord users that have completed Riot verification on the Web
+ * app. Choice `value` is the discordId; choice `name` is a human-readable
+ * "@username · gameName#tagLine". Use a String option (not a User option) on
+ * the slash command to consume this.
+ */
+export async function suggestVerifiedUsers(
+	interaction: AutocompleteInteraction<'cached'>,
+	focusedValue: string
+): Promise<void> {
+	const all = await listVerifiedAccounts();
+	const guild = interaction.guild;
+	const needle = focusedValue.trim().toLowerCase();
+
+	// Pull cached Discord usernames where possible (fetch is async & quota-bound).
+	const enriched = all.map((acc) => {
+		const member = guild?.members.cache.get(acc.discordId);
+		const username =
+			member?.user?.username ?? acc.discordId;
+		const display = `@${username} · ${acc.riotId}`;
+		return { discordId: acc.discordId, username, riotId: acc.riotId, display };
+	});
+
+	const filtered = needle
+		? enriched.filter(
+				(e) =>
+					e.username.toLowerCase().includes(needle) ||
+					e.riotId.toLowerCase().includes(needle) ||
+					e.discordId.includes(needle)
+			)
+		: enriched;
+
+	const sorted = filtered.sort((a, b) => a.username.localeCompare(b.username));
+	await interaction.respond(
+		sorted.slice(0, LIMIT).map((e) => ({
+			name: clip(e.display),
+			value: e.discordId,
 		}))
 	);
 }

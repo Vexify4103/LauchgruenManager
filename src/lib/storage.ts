@@ -1,7 +1,8 @@
-import { readFile, writeFile, mkdir } from 'fs/promises';
-import { dirname } from 'path';
-import { config } from '../config.js';
+import { getDb } from './mongo.js';
 import type { Storage, StoredTeam } from '../types.js';
+
+const COLLECTION = 'bot_state';
+const DOC_ID = 'default';
 
 const EMPTY_STORAGE: Storage = {
 	teams: {},
@@ -9,42 +10,41 @@ const EMPTY_STORAGE: Storage = {
 	tournament: { matches: [] },
 };
 
+type StorageDoc = Storage & { _id: string };
+
 let cache: Storage | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 
-async function readFromDisk(): Promise<Storage> {
-	try {
-		const raw = await readFile(config.storagePath, 'utf8');
-		const parsed = JSON.parse(raw) as Partial<Storage>;
-		const t = parsed.tournament as Storage['tournament'] | undefined;
-		return {
-			teams: parsed.teams ?? {},
-			scannedMatches: parsed.scannedMatches ?? [],
-			tournament: {
-				providerId: t?.providerId,
-				tournamentId: t?.tournamentId,
-				matches: t?.matches ?? [],
-				mode: t?.mode,
-				name: t?.name,
-			},
-			waitingQueue: parsed.waitingQueue,
-		};
-	} catch (error) {
-		if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-			return structuredClone(EMPTY_STORAGE);
-		}
-		throw error;
-	}
+async function readFromDb(): Promise<Storage> {
+	const db = await getDb();
+	const doc = await db.collection<StorageDoc>(COLLECTION).findOne({ _id: DOC_ID });
+	if (!doc) return structuredClone(EMPTY_STORAGE);
+
+	const t = doc.tournament as Storage['tournament'] | undefined;
+	return {
+		teams: doc.teams ?? {},
+		scannedMatches: doc.scannedMatches ?? [],
+		tournament: {
+			providerId: t?.providerId,
+			tournamentId: t?.tournamentId,
+			matches: t?.matches ?? [],
+			mode: t?.mode,
+			name: t?.name,
+		},
+		waitingQueue: doc.waitingQueue,
+	};
 }
 
-async function writeToDisk(storage: Storage): Promise<void> {
-	await mkdir(dirname(config.storagePath), { recursive: true });
-	await writeFile(config.storagePath, JSON.stringify(storage, null, '\t') + '\n', 'utf8');
+async function writeToDb(storage: Storage): Promise<void> {
+	const db = await getDb();
+	await db
+		.collection<StorageDoc>(COLLECTION)
+		.replaceOne({ _id: DOC_ID }, { ...storage }, { upsert: true });
 }
 
 export async function loadStorage(): Promise<Storage> {
 	if (!cache) {
-		cache = await readFromDisk();
+		cache = await readFromDb();
 	}
 	return cache;
 }
@@ -53,7 +53,7 @@ export async function updateStorage<T>(mutator: (storage: Storage) => T | Promis
 	const next = writeQueue.then(async () => {
 		const storage = await loadStorage();
 		const result = await mutator(storage);
-		await writeToDisk(storage);
+		await writeToDb(storage);
 		return result;
 	});
 

@@ -7,7 +7,7 @@ import type { BotCommand } from '../../types.js';
 const linkDiscordCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('linkdiscord')
-		.setDescription('Links a Discord user to a registered player.')
+		.setDescription('Manual override: links a Discord user to a player slot. Prefer /addplayer for verified users.')
 		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
 		.addStringOption((o) => o.setName('riotid').setDescription("Player's Riot ID").setRequired(true).setAutocomplete(true))
 		.addUserOption((o) => o.setName('member').setDescription('Discord user').setRequired(true))
