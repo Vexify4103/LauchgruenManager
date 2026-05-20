@@ -6,10 +6,15 @@ function connect(): Promise<MongoClient> {
 	const uri = process.env.MONGODB_URI;
 	if (!uri) throw new Error('Missing environment variable: MONGODB_URI');
 	if (!clientPromise) {
-		clientPromise = new MongoClient(uri, {
+		const client = new MongoClient(uri, {
 			maxPoolSize: 5,
 			serverSelectionTimeoutMS: 5000,
-		}).connect();
+		});
+		clientPromise = client.connect().catch(async (error: unknown) => {
+			clientPromise = null;
+			await client.close().catch(() => undefined);
+			throw error;
+		});
 	}
 	return clientPromise;
 }
@@ -22,8 +27,9 @@ export async function getDb(): Promise<Db> {
 
 export async function closeMongo(): Promise<void> {
 	if (clientPromise) {
-		const client = await clientPromise;
+		const promise = clientPromise;
 		clientPromise = null;
+		const client = await promise;
 		await client.close();
 	}
 }

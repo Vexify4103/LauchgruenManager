@@ -90,8 +90,7 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 				],
 			});
 		} catch (error) {
-			console.error('Error syncing guild slash commands:', error);
-			process.exitCode = 1;
+			console.error('[startup] Error while running client ready tasks:', error);
 		}
 	},
 };

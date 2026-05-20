@@ -5,12 +5,18 @@ import interactionCreateEvent from './interactionCreate.js';
 import voiceStateUpdateEvent from './voiceStateUpdate.js';
 
 function registerEvent<K extends keyof ClientEvents>(client: BotClient, event: BotEvent<K>): void {
+	const execute = (...args: ClientEvents[K]) => {
+		void Promise.resolve(event.execute(client, ...args)).catch((error: unknown) => {
+			console.error(`[event] ${String(event.name)} failed:`, error);
+		});
+	};
+
 	if (event.once) {
-		client.once(event.name, (...args: ClientEvents[K]) => event.execute(client, ...args));
+		client.once(event.name, execute);
 		return;
 	}
 
-	client.on(event.name, (...args: ClientEvents[K]) => event.execute(client, ...args));
+	client.on(event.name, execute);
 }
 
 export function registerEvents(client: BotClient): void {
