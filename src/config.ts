@@ -34,7 +34,7 @@ export const config = {
 	autoscanChannelId: process.env.AUTOSCAN_CHANNEL_ID?.trim() || null,
 
 	tournamentRoleId: process.env.TOURNAMENT_ROLE_ID ?? '1476317147113193613',
-	nicknameFormat: process.env.NICKNAME_FORMAT ?? '{gameName}',
+	nicknameFormat: process.env.NICKNAME_FORMAT ?? '{displayName} | {riotId}',
 
 	/** Category ID where team voice channels are created. */
 	teamVoiceCategoryId: process.env.TEAM_VOICE_CATEGORY_ID ?? '1495405939065618544',

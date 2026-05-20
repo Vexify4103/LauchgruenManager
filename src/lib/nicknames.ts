@@ -8,11 +8,19 @@ export function delay(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function buildNickname(account: RiotAccount): string {
+export function buildNickname(account: RiotAccount, displayName?: string): string {
+	const safeDisplayName = displayName?.trim() || account.gameName;
+	const riotId = `${account.gameName}#${account.tagLine}`;
+	if (config.nicknameFormat === '{displayName} | {riotId}') {
+		const separator = ' | ';
+		const availableNameLength = Math.max(1, 32 - separator.length - riotId.length);
+		return `${safeDisplayName.slice(0, availableNameLength)}${separator}${riotId}`.slice(0, 32);
+	}
 	const raw = config.nicknameFormat
+		.replace('{displayName}', safeDisplayName)
 		.replace('{gameName}', account.gameName)
 		.replace('{tagLine}', account.tagLine)
-		.replace('{riotId}', `${account.gameName}#${account.tagLine}`);
+		.replace('{riotId}', riotId);
 	return raw.slice(0, 32);
 }
 
@@ -39,7 +47,8 @@ export async function renamePlayer(
 	riotId: string,
 	gameName: string,
 	tagLine: string,
-	discordId: string
+	discordId: string,
+	displayName?: string
 ): Promise<RenameResult> {
 	if (discordId === guild.ownerId) return { kind: 'owner', riotId, discordId };
 
@@ -54,7 +63,7 @@ export async function renamePlayer(
 		return { kind: 'hierarchy', riotId, discordId };
 	}
 
-	const nickname = buildNickname({ puuid: '', gameName, tagLine });
+	const nickname = buildNickname({ puuid: '', gameName, tagLine }, displayName ?? member.nickname ?? member.user.displayName);
 	if (member.nickname === nickname || (member.nickname === null && member.user.username === nickname)) {
 		return { kind: 'unchanged', riotId, discordId };
 	}

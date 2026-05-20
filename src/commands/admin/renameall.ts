@@ -1,6 +1,7 @@
 import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { hasAdminPermission, makeEmbed } from '../../lib/embeds.js';
 import { delay, ensureNicknamePermissions, renamePlayer, ROLE_ACTION_DELAY_MS } from '../../lib/nicknames.js';
+import { getApplicationByDiscordId } from '../../lib/applications.js';
 import { loadStorage } from '../../lib/storage.js';
 import type { BotCommand } from '../../types.js';
 
@@ -37,7 +38,8 @@ const renameAllCommand: BotCommand = {
 			for (const player of team.players.filter((p) => p.discordId)) {
 				const [gameName, tagLine] = player.riotId.split('#');
 				if (!gameName || !tagLine || !player.discordId) continue;
-				const res = await renamePlayer(interaction.guild, botMember, player.riotId, gameName, tagLine, player.discordId);
+				const application = await getApplicationByDiscordId(player.discordId);
+				const res = await renamePlayer(interaction.guild, botMember, player.riotId, gameName, tagLine, player.discordId, application?.displayName);
 				if (res.kind === 'renamed') stats.renamed++;
 				else if (res.kind === 'unchanged') stats.unchanged++;
 				else stats.failed++;
