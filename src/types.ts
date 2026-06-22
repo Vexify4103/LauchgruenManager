@@ -1,4 +1,12 @@
-import type { AutocompleteInteraction, ChatInputCommandInteraction, ClientEvents, Collection, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
+import type {
+	AutocompleteInteraction,
+	ChatInputCommandInteraction,
+	ClientEvents,
+	Collection,
+	SlashCommandBuilder,
+	SlashCommandOptionsOnlyBuilder,
+	SlashCommandSubcommandsOnlyBuilder,
+} from 'discord.js';
 import { Client } from 'discord.js';
 
 export type BotCommand = {
@@ -21,8 +29,11 @@ export type StoredPlayer = {
 	riotId: string;
 	puuid: string;
 	discordId?: string;
+	discordUsername?: string;
 	/** Preferred lane/role for the public team card. Pulled from the player's web application. */
 	role?: 'Top' | 'Jungle' | 'Mid' | 'Bot' | 'Support' | 'Fill' | 'Sub';
+	/** Manual emergency substitutes have not completed the website verification flow. */
+	verificationStatus?: 'verified' | 'manual';
 };
 
 /**
@@ -64,6 +75,8 @@ export type StoredTeam = {
 	roleId?: string;
 	/** Voice channel ID created for this team. */
 	voiceChannelId?: string;
+	/** Private text channel ID created for this team. */
+	textChannelId?: string;
 	/** Optional tournament metadata used by the Web app. Set via admin tooling. */
 	meta?: TeamMeta;
 };

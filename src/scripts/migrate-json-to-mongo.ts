@@ -36,9 +36,7 @@ async function main() {
 	const client = await new MongoClient(uri).connect();
 	try {
 		const db = client.db(dbName);
-		await db
-			.collection<{ _id: string } & Record<string, unknown>>('bot_state')
-			.replaceOne({ _id: 'default' }, { ...parsed }, { upsert: true });
+		await db.collection<{ _id: string } & Record<string, unknown>>('bot_state').replaceOne({ _id: 'default' }, { ...parsed }, { upsert: true });
 		console.log('Migration complete.');
 	} finally {
 		await client.close();

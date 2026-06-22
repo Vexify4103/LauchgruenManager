@@ -1,6 +1,7 @@
 ﻿import { ActivityType, ChannelType, type VoiceChannel } from 'discord.js';
 import { config } from '../config.js';
 import { startAutoscan } from '../lib/autoscan.js';
+import { startStreamScheduleReminder } from '../lib/streamScheduleReminder.js';
 import { deployGuildCommands } from '../lib/deployCommands.js';
 import { logInfo } from '../lib/logger.js';
 import { buildQueueNickname, extractDisplayName, isQueueNickname } from '../lib/queue.js';
@@ -29,9 +30,7 @@ async function recoverQueue(client: BotClient): Promise<void> {
 		for (const entry of departed) {
 			const member = await guild.members.fetch(entry.userId).catch(() => null);
 			if (member) {
-				await member
-					.setNickname(entry.originalNickname ?? null, 'Waiting queue: left while bot was offline, nickname restored')
-					.catch(() => null);
+				await member.setNickname(entry.originalNickname ?? null, 'Waiting queue: left while bot was offline, nickname restored').catch(() => null);
 			}
 		}
 
@@ -43,9 +42,7 @@ async function recoverQueue(client: BotClient): Promise<void> {
 			staying.push({
 				userId: memberId,
 				originalNickname: hasQueueNick ? null : member.nickname,
-				displayName: hasQueueNick
-					? extractDisplayName(member.nickname!)
-					: (member.nickname ?? member.user.displayName),
+				displayName: hasQueueNick ? extractDisplayName(member.nickname!) : (member.nickname ?? member.user.displayName),
 				joinedAt: Date.now(),
 			});
 		}
@@ -57,9 +54,7 @@ async function recoverQueue(client: BotClient): Promise<void> {
 			const entry = staying[i];
 			const member = voiceChannel.members.get(entry.userId);
 			if (!member) continue;
-			await member
-				.setNickname(buildQueueNickname(i + 1, entry.displayName), 'Waiting queue: re-synced after bot restart')
-				.catch(() => null);
+			await member.setNickname(buildQueueNickname(i + 1, entry.displayName), 'Waiting queue: re-synced after bot restart').catch(() => null);
 		}
 	});
 }
@@ -77,6 +72,7 @@ const clientReadyEvent: BotEvent<'clientReady'> = {
 			await loadStorage();
 			await recoverQueue(client);
 			startAutoscan(client);
+			startStreamScheduleReminder(client);
 
 			logInfo(client, '🟢 Bot started', `Logged in as **${client.user?.tag ?? '?'}** · Autoscan: **${config.autoscanEnabled ? 'on' : 'off'}**`);
 

@@ -30,14 +30,10 @@ export type TournamentApplication = {
 
 type Doc = TournamentApplication & { _id: string };
 
-export async function getApplicationByDiscordId(
-	discordId: string
-): Promise<TournamentApplication | null> {
+export async function getApplicationByDiscordId(discordId: string): Promise<TournamentApplication | null> {
 	const db = await getDb();
 	// Applications are keyed `${puuid}|${discordId}`, so we have to scan by field.
-	const doc = await db
-		.collection<Doc>(COLLECTION)
-		.findOne({ discordId });
+	const doc = await db.collection<Doc>(COLLECTION).findOne({ discordId });
 	if (!doc) return null;
 	const { _id, ...rest } = doc;
 	void _id;

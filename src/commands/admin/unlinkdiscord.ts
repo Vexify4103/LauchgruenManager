@@ -7,7 +7,7 @@ import type { BotCommand } from '../../types.js';
 const unlinkDiscordCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('unlinkdiscord')
-		.setDescription("Removes the Discord link of a player.")
+		.setDescription('Removes the Discord link of a player.')
 		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
 		.addStringOption((o) => o.setName('riotid').setDescription("Player's Riot ID").setRequired(true).setAutocomplete(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),

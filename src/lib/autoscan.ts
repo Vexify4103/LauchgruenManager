@@ -120,7 +120,10 @@ export async function runOnePoll(client: Client): Promise<{ processed: number; n
 }
 
 export function startAutoscan(client: Client): void {
-	if (!state.enabled) { console.log('[autoscan] Disabled.'); return; }
+	if (!state.enabled) {
+		console.log('[autoscan] Disabled.');
+		return;
+	}
 	if (state.timer) return;
 	console.log(`[autoscan] Starting every ${Math.round(state.intervalMs / 1000)}s.`);
 
@@ -134,15 +137,21 @@ export function startAutoscan(client: Client): void {
 				console.error('[autoscan] Unexpected error:', err);
 				state.lastPollError = err instanceof Error ? err.message : String(err);
 			})
-			.finally(() => { state.timer = setTimeout(recur, state.intervalMs); });
+			.finally(() => {
+				state.timer = setTimeout(recur, state.intervalMs);
+			});
 	}, 5_000);
 }
 
 export function stopAutoscan(): void {
-	if (state.timer) { clearTimeout(state.timer); state.timer = null; }
+	if (state.timer) {
+		clearTimeout(state.timer);
+		state.timer = null;
+	}
 }
 
 export function setAutoscanEnabled(enabled: boolean, client: Client): void {
 	state.enabled = enabled;
-	if (enabled) startAutoscan(client); else stopAutoscan();
+	if (enabled) startAutoscan(client);
+	else stopAutoscan();
 }

@@ -57,28 +57,32 @@ const tournamentStopCommand: BotCommand = {
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Wrong Server',
-					description: 'This bot is only active for the configured server.',
-					processed: 0,
-					total: 0,
-					status: 'Cancelled',
-					summaryLines: ['This command cannot be used here.'],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Wrong Server',
+						description: 'This bot is only active for the configured server.',
+						processed: 0,
+						total: 0,
+						status: 'Cancelled',
+						summaryLines: ['This command cannot be used here.'],
+					})
+				)
 			);
 			return;
 		}
 
 		if (!hasCommandPermission(interaction.member)) {
 			await interaction.reply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Missing Permissions',
-					description: 'You are not allowed to run this command.',
-					processed: 0,
-					total: 0,
-					status: 'Cancelled',
-					summaryLines: ['You need `Manage Server` or `Administrator`.'],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Missing Permissions',
+						description: 'You are not allowed to run this command.',
+						processed: 0,
+						total: 0,
+						status: 'Cancelled',
+						summaryLines: ['You need `Manage Server` or `Administrator`.'],
+					})
+				)
 			);
 			return;
 		}
@@ -97,14 +101,16 @@ const tournamentStopCommand: BotCommand = {
 
 		if (membersWithRole.size === 0) {
 			await interaction.editReply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Tournament Stop',
-					description: 'Nobody currently has the tournament role.',
-					processed: 0,
-					total: 0,
-					status: 'Completed',
-					summaryLines: ['There was nothing to remove.'],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Tournament Stop',
+						description: 'Nobody currently has the tournament role.',
+						processed: 0,
+						total: 0,
+						status: 'Completed',
+						summaryLines: ['There was nothing to remove.'],
+					})
+				)
 			);
 			return;
 		}
@@ -128,15 +134,15 @@ const tournamentStopCommand: BotCommand = {
 
 			const isLast = index + 1 === members.length;
 			await interaction.editReply(
-				wrapTournament(buildStopEmbed(
-					index + 1,
-					members.length,
-					results,
-					isLast ? 'Completed' : 'Running',
-					isLast
-						? 'The tournament role has been processed for all found members.'
-						: `Processing member ${index + 1} of ${members.length}.`
-				))
+				wrapTournament(
+					buildStopEmbed(
+						index + 1,
+						members.length,
+						results,
+						isLast ? 'Completed' : 'Running',
+						isLast ? 'The tournament role has been processed for all found members.' : `Processing member ${index + 1} of ${members.length}.`
+					)
+				)
 			);
 
 			if (index < members.length - 1) {

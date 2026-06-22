@@ -14,14 +14,22 @@ const interactionCreateEvent: BotEvent<'interactionCreate'> = {
 			if (!interaction.inCachedGuild()) return;
 			const command = client.commands.get(interaction.commandName);
 			if (!command?.autocomplete) {
-				try { await interaction.respond([]); } catch { /* expired */ }
+				try {
+					await interaction.respond([]);
+				} catch {
+					/* expired */
+				}
 				return;
 			}
 			try {
 				await command.autocomplete(interaction);
 			} catch (err) {
 				console.error(`[autocomplete] /${interaction.commandName}:`, err);
-				try { await interaction.respond([]); } catch { /* expired */ }
+				try {
+					await interaction.respond([]);
+				} catch {
+					/* expired */
+				}
 			}
 			return;
 		}

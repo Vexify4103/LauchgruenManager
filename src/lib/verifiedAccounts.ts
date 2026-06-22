@@ -23,9 +23,7 @@ export type VerifiedRiotAccount = {
 
 type Doc = VerifiedRiotAccount & { _id: string };
 
-export async function getVerifiedAccountByDiscordId(
-	discordId: string
-): Promise<VerifiedRiotAccount | null> {
+export async function getVerifiedAccountByDiscordId(discordId: string): Promise<VerifiedRiotAccount | null> {
 	const db = await getDb();
 	const doc = await db.collection<Doc>(COLLECTION).findOne({ _id: discordId });
 	if (!doc) return null;

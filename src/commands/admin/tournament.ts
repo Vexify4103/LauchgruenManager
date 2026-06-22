@@ -24,25 +24,20 @@ const tournamentCommand: BotCommand = {
 				.setDescription('Set up a new tournament (name + mode). Does not affect registered teams.')
 				.addStringOption((o) => o.setName('name').setDescription('Tournament name shown in status and embeds.').setRequired(true))
 				.addStringOption((o) =>
-					o.setName('mode')
+					o
+						.setName('mode')
 						.setDescription('fearless = track champion bans per team · standard = stats only')
 						.setRequired(true)
 						.addChoices(
 							{ name: '⚔️ Fearless Draft — track played champions', value: 'fearless' },
-							{ name: '📊 Standard — stats only, no champion tracking',  value: 'standard' }
+							{ name: '📊 Standard — stats only, no champion tracking', value: 'standard' }
 						)
 				)
 				.addBooleanOption((o) =>
-					o.setName('reset_matches')
-						.setDescription('Clear all previous match history and Riot tournament codes? (default: false)')
-						.setRequired(false)
+					o.setName('reset_matches').setDescription('Clear all previous match history and Riot tournament codes? (default: false)').setRequired(false)
 				)
 		)
-		.addSubcommand((sub) =>
-			sub
-				.setName('status')
-				.setDescription('Show the current tournament configuration and stats.')
-		),
+		.addSubcommand((sub) => sub.setName('status').setDescription('Show the current tournament configuration and stats.')),
 
 	async execute(interaction) {
 		if (!hasAdminPermission(interaction.member)) {
@@ -54,8 +49,8 @@ const tournamentCommand: BotCommand = {
 
 		// ── /tournament start ────────────────────────────────────────────────
 		if (sub === 'start') {
-			const name        = interaction.options.getString('name', true).trim();
-			const mode        = interaction.options.getString('mode', true) as TournamentMode;
+			const name = interaction.options.getString('name', true).trim();
+			const mode = interaction.options.getString('mode', true) as TournamentMode;
 			const resetMatches = interaction.options.getBoolean('reset_matches') ?? false;
 
 			await interaction.deferReply();
@@ -65,25 +60,17 @@ const tournamentCommand: BotCommand = {
 				storage.tournament.mode = mode;
 
 				if (resetMatches) {
-					storage.tournament.matches    = [];
-					storage.tournament.providerId  = undefined;
+					storage.tournament.matches = [];
+					storage.tournament.providerId = undefined;
 					storage.tournament.tournamentId = undefined;
-					storage.scannedMatches         = [];
+					storage.scannedMatches = [];
 				}
 			});
 
-			const resetNote = resetMatches
-				? '\n\n> Match history, scanned matches and Riot tournament codes have been reset.'
-				: '';
+			const resetNote = resetMatches ? '\n\n> Match history, scanned matches and Riot tournament codes have been reset.' : '';
 
 			await interaction.editReply({
-				embeds: [
-					makeEmbed(
-						'success',
-						`Tournament set up — ${name}`,
-						`**Mode:** ${MODE_LABEL[mode]}\n${MODE_DESC[mode]}${resetNote}`
-					),
-				],
+				embeds: [makeEmbed('success', `Tournament set up — ${name}`, `**Mode:** ${MODE_LABEL[mode]}\n${MODE_DESC[mode]}${resetNote}`)],
 			});
 			return;
 		}
@@ -93,8 +80,8 @@ const tournamentCommand: BotCommand = {
 			const storage = await loadStorage();
 			const { tournament, teams, scannedMatches } = storage;
 
-			const name    = tournament.name ?? '*Not set — use `/tournament start` first.*';
-			const mode    = tournament.mode ?? 'fearless';
+			const name = tournament.name ?? '*Not set — use `/tournament start` first.*';
+			const mode = tournament.mode ?? 'fearless';
 			const matches = tournament.matches.length;
 			const scanned = scannedMatches.length;
 			const teamCount = Object.keys(teams).length;

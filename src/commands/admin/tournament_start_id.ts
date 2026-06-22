@@ -61,28 +61,32 @@ const tournamentStartCommand: BotCommand = {
 	async execute(interaction) {
 		if (interaction.guildId !== config.guildId) {
 			await interaction.reply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Wrong Server',
-					description: 'This bot is only active for the configured server.',
-					processed: 0,
-					total: 0,
-					status: 'Cancelled',
-					summaryLines: ['This command cannot be used here.'],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Wrong Server',
+						description: 'This bot is only active for the configured server.',
+						processed: 0,
+						total: 0,
+						status: 'Cancelled',
+						summaryLines: ['This command cannot be used here.'],
+					})
+				)
 			);
 			return;
 		}
 
 		if (!hasCommandPermission(interaction.member)) {
 			await interaction.reply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Missing Permissions',
-					description: 'You are not allowed to run this command.',
-					processed: 0,
-					total: 0,
-					status: 'Cancelled',
-					summaryLines: ['You need `Manage Server` or `Administrator`.'],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Missing Permissions',
+						description: 'You are not allowed to run this command.',
+						processed: 0,
+						total: 0,
+						status: 'Cancelled',
+						summaryLines: ['You need `Manage Server` or `Administrator`.'],
+					})
+				)
 			);
 			return;
 		}
@@ -97,14 +101,16 @@ const tournamentStartCommand: BotCommand = {
 
 			if (userIds.length === 0) {
 				await interaction.editReply(
-					wrapTournament(createTournamentEmbed({
-						title: 'Tournament Start',
-						description: 'No valid Discord user IDs were found.',
-						processed: 0,
-						total: 0,
-						status: 'Cancelled',
-						summaryLines: ['Please check the content of `user_id_list`.'],
-					}))
+					wrapTournament(
+						createTournamentEmbed({
+							title: 'Tournament Start',
+							description: 'No valid Discord user IDs were found.',
+							processed: 0,
+							total: 0,
+							status: 'Cancelled',
+							summaryLines: ['Please check the content of `user_id_list`.'],
+						})
+					)
 				);
 				return;
 			}
@@ -146,13 +152,15 @@ const tournamentStartCommand: BotCommand = {
 
 				const isLast = index + 1 === userIds.length;
 				await interaction.editReply(
-					wrapTournament(buildStartEmbed(
-						index + 1,
-						userIds.length,
-						results,
-						isLast ? 'Completed' : 'Running',
-						isLast ? 'The tournament role has been processed for all entries.' : `Processing entry ${index + 1} of ${userIds.length}.`
-					))
+					wrapTournament(
+						buildStartEmbed(
+							index + 1,
+							userIds.length,
+							results,
+							isLast ? 'Completed' : 'Running',
+							isLast ? 'The tournament role has been processed for all entries.' : `Processing entry ${index + 1} of ${userIds.length}.`
+						)
+					)
 				);
 
 				if (index < userIds.length - 1) {
@@ -163,14 +171,16 @@ const tournamentStartCommand: BotCommand = {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 
 			await interaction.editReply(
-				wrapTournament(createTournamentEmbed({
-					title: 'Tournament start failed',
-					description: 'An error occurred while processing the role list.',
-					processed: 0,
-					total: 0,
-					status: 'Error',
-					summaryLines: [`Error: ${message}`],
-				}))
+				wrapTournament(
+					createTournamentEmbed({
+						title: 'Tournament start failed',
+						description: 'An error occurred while processing the role list.',
+						processed: 0,
+						total: 0,
+						status: 'Error',
+						summaryLines: [`Error: ${message}`],
+					})
+				)
 			);
 		}
 	},

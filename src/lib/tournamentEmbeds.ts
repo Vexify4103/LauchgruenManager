@@ -21,9 +21,9 @@ function buildProgressText(current: number, total: number): string {
 // ─── Status config ───────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { emoji: string; color: number }> = {
-	Running:   { emoji: '⏳', color: 0x5865f2 },
+	Running: { emoji: '⏳', color: 0x5865f2 },
 	Completed: { emoji: '✅', color: 0x5cb85c },
-	Error:     { emoji: '❌', color: 0xd9534f },
+	Error: { emoji: '❌', color: 0xd9534f },
 	Cancelled: { emoji: '🚫', color: 0x95a5a6 },
 	Preparing: { emoji: '🔄', color: 0xf0ad4e },
 };
@@ -63,9 +63,7 @@ export function createTournamentEmbed(options: TournamentEmbedOptions): Containe
 		.addTextDisplayComponents(text(options.summaryLines.join('\n')));
 
 	if (options.detailLines && options.detailLines.length > 0) {
-		container
-			.addSeparatorComponents(sep(true))
-			.addTextDisplayComponents(text(options.detailLines.join('\n')));
+		container.addSeparatorComponents(sep(true)).addTextDisplayComponents(text(options.detailLines.join('\n')));
 	}
 
 	return container;

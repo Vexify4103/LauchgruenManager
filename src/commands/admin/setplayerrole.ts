@@ -18,18 +18,14 @@ const setPlayerRoleCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('setplayerrole')
 		.setDescription('Changes the role of a player already on a team (for balance adjustments).')
-		.addStringOption((o) =>
-			o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true)
-		)
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('player').setDescription('Verified player on the team').setRequired(true).setAutocomplete(true))
 		.addStringOption((o) =>
 			o
-				.setName('player')
-				.setDescription('Verified player on the team')
+				.setName('role')
+				.setDescription('New role')
 				.setRequired(true)
-				.setAutocomplete(true)
-		)
-		.addStringOption((o) =>
-			o.setName('role').setDescription('New role').setRequired(true).addChoices(...ROLE_CHOICES)
+				.addChoices(...ROLE_CHOICES)
 		)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
@@ -76,26 +72,14 @@ const setPlayerRoleCommand: BotCommand = {
 				return;
 			case 'not-on-team':
 				await interaction.reply({
-					embeds: [
-						makeEmbed(
-							'error',
-							'Player not on this team',
-							`<@${discordId}> isn't on \`${result.team.name}\`. Use \`/addplayer\` first.`
-						),
-					],
+					embeds: [makeEmbed('error', 'Player not on this team', `<@${discordId}> isn't on \`${result.team.name}\`. Use \`/addplayer\` first.`)],
 					flags: MessageFlags.Ephemeral,
 				});
 				return;
 			case 'updated': {
 				const prev = result.previous ? `\`${result.previous}\` → ` : '';
 				await interaction.reply({
-					embeds: [
-						makeEmbed(
-							'success',
-							'Role updated',
-							`<@${discordId}> on \`${result.team.name}\`: ${prev}**${newRole}**`
-						),
-					],
+					embeds: [makeEmbed('success', 'Role updated', `<@${discordId}> on \`${result.team.name}\`: ${prev}**${newRole}**`)],
 				});
 			}
 		}

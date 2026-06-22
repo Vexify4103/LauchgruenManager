@@ -5,9 +5,7 @@ import type { BotCommand } from '../../types.js';
 import { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags } from 'discord.js';
 
 const listTeamsCommand: BotCommand = {
-	data: new SlashCommandBuilder()
-		.setName('listteams')
-		.setDescription('Shows all registered teams and their players.'),
+	data: new SlashCommandBuilder().setName('listteams').setDescription('Shows all registered teams and their players.'),
 
 	async execute(interaction) {
 		const storage = await loadStorage();
@@ -27,11 +25,10 @@ const listTeamsCommand: BotCommand = {
 
 			const roleText = team.roleId ? ` · 🎭 <@&${team.roleId}>` : '';
 			const vcText = team.voiceChannelId ? ` · 🔊 <#${team.voiceChannelId}>` : '';
-			const header = `**${team.name}**${roleText}${vcText}`;
+			const tcText = team.textChannelId ? ` · <#${team.textChannelId}>` : '';
+			const header = `**${team.name}**${roleText}${tcText}${vcText}`;
 
-			const players = team.players.length === 0
-				? '*No players*'
-				: team.players.map((p) => `\`${p.riotId}\`${p.discordId ? ` <@${p.discordId}>` : ''}`).join(' · ');
+			const players = team.players.length === 0 ? '*No players*' : team.players.map((p) => `\`${p.riotId}\`${p.discordId ? ` <@${p.discordId}>` : ''}`).join(' · ');
 
 			const bans = team.playedChampions.length > 0 ? `\n🚫 Banned: **${team.playedChampions.length}**` : '';
 

@@ -20,43 +20,43 @@ All commands require `Manage Server` or `Administrator` permission.
 
 ### Team Management
 
-| Command | Options | Description |
-|---|---|---|
-| `/createteam` | `name` (req), `role` (opt) | Creates a team, voice channel, and links a Discord role |
+| Command       | Options                           | Description                                                |
+| ------------- | --------------------------------- | ---------------------------------------------------------- |
+| `/createteam` | `name` (req), `role` (opt)        | Creates a team, voice channel, and links a Discord role    |
 | `/deleteteam` | `team` (req), `delete_role` (opt) | Deletes a team, its voice channel, and optionally its role |
-| `/listteams` | — | Lists all registered teams and their players |
+| `/listteams`  | —                                 | Lists all registered teams and their players               |
 
 ### Player Management
 
-| Command | Options | Description |
-|---|---|---|
-| `/addplayer` | `team` (req), `riotid` (req), `member` (opt) | Adds a player to a team by Riot ID |
-| `/removeplayer` | `team` (req), `riotid` (req) | Removes a player from a team |
-| `/linkdiscord` | `team` (req), `riotid` (req), `member` (req) | Links a Discord user to a registered player |
-| `/unlinkdiscord` | `team` (req), `riotid` (req) | Removes the Discord link from a player |
+| Command          | Options                                      | Description                                 |
+| ---------------- | -------------------------------------------- | ------------------------------------------- |
+| `/addplayer`     | `team` (req), `riotid` (req), `member` (opt) | Adds a player to a team by Riot ID          |
+| `/removeplayer`  | `team` (req), `riotid` (req)                 | Removes a player from a team                |
+| `/linkdiscord`   | `team` (req), `riotid` (req), `member` (req) | Links a Discord user to a registered player |
+| `/unlinkdiscord` | `team` (req), `riotid` (req)                 | Removes the Discord link from a player      |
 
 ### Fearless Draft
 
-| Command | Options | Description |
-|---|---|---|
-| `/banned` | `team` (req) | Shows all locked champions for a team |
-| `/scangame` | `id` (req) | Scans a match ID and records played champions |
-| `/resetteam` | `team` (req) | Clears the Fearless list for one team |
-| `/resetall` | `confirm` (req) | Clears all Fearless lists and match history |
+| Command      | Options         | Description                                   |
+| ------------ | --------------- | --------------------------------------------- |
+| `/banned`    | `team` (req)    | Shows all locked champions for a team         |
+| `/scangame`  | `id` (req)      | Scans a match ID and records played champions |
+| `/resetteam` | `team` (req)    | Clears the Fearless list for one team         |
+| `/resetall`  | `confirm` (req) | Clears all Fearless lists and match history   |
 
 ### Auto-Scan
 
-| Command | Options | Description |
-|---|---|---|
-| `/watch status` | — | Shows current auto-scan status |
-| `/watch start` | — | Enables background auto-scanning |
-| `/watch stop` | — | Disables background auto-scanning |
-| `/watch poll` | — | Manually triggers one scan cycle |
+| Command         | Options | Description                       |
+| --------------- | ------- | --------------------------------- |
+| `/watch status` | —       | Shows current auto-scan status    |
+| `/watch start`  | —       | Enables background auto-scanning  |
+| `/watch stop`   | —       | Disables background auto-scanning |
+| `/watch poll`   | —       | Manually triggers one scan cycle  |
 
 ### Match & Tournament Codes
 
-| Command | Options | Description |
-|---|---|---|
+| Command       | Options                                       | Description                                                      |
+| ------------- | --------------------------------------------- | ---------------------------------------------------------------- |
 | `/startmatch` | `round` (req), `team_a` (req), `team_b` (req) | Posts a match embed; team captains click to get their lobby code |
 
 ### Logs
@@ -65,19 +65,19 @@ Set `LOG_CHANNEL_ID` to a private admin channel. Every slash command execution (
 
 ### Nickname Sync
 
-| Command | Options | Description |
-|---|---|---|
-| `/renameall` | `confirm` (req) | Sets all linked players' nicknames to their in-game name |
-| `/renameteam` | `team` (req) | Same as above but for one team only |
+| Command       | Options         | Description                                                                 |
+| ------------- | --------------- | --------------------------------------------------------------------------- |
+| `/renameall`  | `confirm` (req) | Sets all linked players' nicknames to their in-game name                    |
+| `/renameteam` | `team` (req)    | Same as above but for one team only                                         |
 | `/clearnames` | `confirm` (req) | Resets all linked players' nicknames back to their default Discord username |
 
 ### Tournament Role
 
-| Command | Options | Description |
-|---|---|---|
-| `/tournament_start_id` | `user_id_liste` (req) | Assigns the tournament role to a list of Discord user IDs |
-| `/tournament_start_username` | `user_name_liste` (req) | Assigns the tournament role by Discord username |
-| `/tournament_stop` | — | Removes the tournament role from every server member |
+| Command                      | Options                 | Description                                               |
+| ---------------------------- | ----------------------- | --------------------------------------------------------- |
+| `/tournament_start_id`       | `user_id_liste` (req)   | Assigns the tournament role to a list of Discord user IDs |
+| `/tournament_start_username` | `user_name_liste` (req) | Assigns the tournament role by Discord username           |
+| `/tournament_stop`           | —                       | Removes the tournament role from every server member      |
 
 ---
 

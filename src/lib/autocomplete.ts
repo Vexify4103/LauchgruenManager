@@ -57,10 +57,7 @@ export async function suggestRiotIds(interaction: AutocompleteInteraction<'cache
  * "@username · gameName#tagLine". Use a String option (not a User option) on
  * the slash command to consume this.
  */
-export async function suggestVerifiedUsers(
-	interaction: AutocompleteInteraction<'cached'>,
-	focusedValue: string
-): Promise<void> {
+export async function suggestVerifiedUsers(interaction: AutocompleteInteraction<'cached'>, focusedValue: string): Promise<void> {
 	const all = await listVerifiedAccounts();
 	const guild = interaction.guild;
 	const needle = focusedValue.trim().toLowerCase();
@@ -68,19 +65,13 @@ export async function suggestVerifiedUsers(
 	// Pull cached Discord usernames where possible (fetch is async & quota-bound).
 	const enriched = all.map((acc) => {
 		const member = guild?.members.cache.get(acc.discordId);
-		const username =
-			member?.user?.username ?? acc.discordId;
+		const username = member?.user?.username ?? acc.discordId;
 		const display = `@${username} · ${acc.riotId}`;
 		return { discordId: acc.discordId, username, riotId: acc.riotId, display };
 	});
 
 	const filtered = needle
-		? enriched.filter(
-				(e) =>
-					e.username.toLowerCase().includes(needle) ||
-					e.riotId.toLowerCase().includes(needle) ||
-					e.discordId.includes(needle)
-			)
+		? enriched.filter((e) => e.username.toLowerCase().includes(needle) || e.riotId.toLowerCase().includes(needle) || e.discordId.includes(needle))
 		: enriched;
 
 	const sorted = filtered.sort((a, b) => a.username.localeCompare(b.username));
@@ -94,7 +85,13 @@ export async function suggestVerifiedUsers(
 
 export async function handleTeamOrRiotIdAutocomplete(interaction: AutocompleteInteraction<'cached'>): Promise<void> {
 	const focused = interaction.options.getFocused(true);
-	if (focused.name === 'team') { await suggestTeams(interaction, focused.value); return; }
-	if (focused.name === 'riotid') { await suggestRiotIds(interaction, focused.value); return; }
+	if (focused.name === 'team') {
+		await suggestTeams(interaction, focused.value);
+		return;
+	}
+	if (focused.name === 'riotid') {
+		await suggestRiotIds(interaction, focused.value);
+		return;
+	}
 	await interaction.respond([]);
 }

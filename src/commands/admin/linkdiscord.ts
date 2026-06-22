@@ -51,7 +51,12 @@ const linkDiscordCommand: BotCommand = {
 				await interaction.reply({ embeds: [makeEmbed('error', 'Player not found', `\`${riotId}\` not in \`${result.team.name}\`.`)], flags: MessageFlags.Ephemeral });
 				return;
 			case 'discord-claimed':
-				await interaction.reply({ embeds: [makeEmbed('error', 'Discord user already taken', `<@${discordUser.id}> is already linked to \`${result.claimRiotId}\` in \`${result.claimTeam.name}\`.`)], flags: MessageFlags.Ephemeral });
+				await interaction.reply({
+					embeds: [
+						makeEmbed('error', 'Discord user already taken', `<@${discordUser.id}> is already linked to \`${result.claimRiotId}\` in \`${result.claimTeam.name}\`.`),
+					],
+					flags: MessageFlags.Ephemeral,
+				});
 				return;
 			case 'linked': {
 				const prev = result.previous ? ` (previously: <@${result.previous}>)` : '';

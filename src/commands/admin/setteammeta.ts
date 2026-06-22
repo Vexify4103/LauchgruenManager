@@ -37,37 +37,19 @@ const setTeamMetaCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('setteammeta')
 		.setDescription('Sets the tournament metadata (group, seed, captain, accent) shown on the Web app for a team.')
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
 		.addStringOption((o) =>
-			o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true)
+			o.setName('group').setDescription('Group letter for the round-robin stage').addChoices({ name: 'Group A', value: 'A' }, { name: 'Group B', value: 'B' })
 		)
-		.addStringOption((o) =>
-			o
-				.setName('group')
-				.setDescription('Group letter for the round-robin stage')
-				.addChoices({ name: 'Group A', value: 'A' }, { name: 'Group B', value: 'B' })
-		)
-		.addIntegerOption((o) =>
-			o
-				.setName('seed')
-				.setDescription('Seed within the group (1–4)')
-				.setMinValue(1)
-				.setMaxValue(4)
-		)
-		.addStringOption((o) =>
-			o
-				.setName('captain')
-				.setDescription('Verified player (autocompletes from web-verified Riot accounts)')
-				.setAutocomplete(true)
-		)
+		.addIntegerOption((o) => o.setName('seed').setDescription('Seed within the group (1–4)').setMinValue(1).setMaxValue(4))
+		.addStringOption((o) => o.setName('captain').setDescription('Verified player (autocompletes from web-verified Riot accounts)').setAutocomplete(true))
 		.addStringOption((o) =>
 			o
 				.setName('accent')
 				.setDescription('Accent gradient for the team card')
 				.addChoices(...ACCENT_CHOICES)
 		)
-		.addBooleanOption((o) =>
-			o.setName('clear').setDescription('Wipe all tournament metadata for this team instead of setting it')
-		)
+		.addBooleanOption((o) => o.setName('clear').setDescription('Wipe all tournament metadata for this team instead of setting it'))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
 	async autocomplete(interaction) {
@@ -99,13 +81,7 @@ const setTeamMetaCommand: BotCommand = {
 
 		if (!clear && group === null && seed === null && captainDiscordId === null && accent === null) {
 			await interaction.reply({
-				embeds: [
-					makeEmbed(
-						'error',
-						'Nothing to update',
-						'Provide at least one of `group`, `seed`, `captain`, `accent` — or set `clear:true` to wipe the metadata.'
-					),
-				],
+				embeds: [makeEmbed('error', 'Nothing to update', 'Provide at least one of `group`, `seed`, `captain`, `accent` — or set `clear:true` to wipe the metadata.')],
 				flags: MessageFlags.Ephemeral,
 			});
 			return;
@@ -240,9 +216,7 @@ const setTeamMetaCommand: BotCommand = {
 				});
 				return;
 			case 'cleared': {
-				const summary = result.removed
-					? `Removed: ${formatMeta(result.removed)}`
-					: 'No metadata was set.';
+				const summary = result.removed ? `Removed: ${formatMeta(result.removed)}` : 'No metadata was set.';
 				await interaction.reply({
 					embeds: [makeEmbed('success', `Cleared meta for ${result.team.name}`, summary)],
 				});
@@ -263,9 +237,7 @@ function formatMeta(meta: TeamMeta): string {
 	if (meta.group) parts.push(`**Group:** ${meta.group}`);
 	if (meta.seed !== undefined) parts.push(`**Seed:** ${meta.seed}`);
 	if (meta.captain) {
-		parts.push(
-			`**Captain:** <@${meta.captain.discordId}> · \`${meta.captain.riotId}\``
-		);
+		parts.push(`**Captain:** <@${meta.captain.discordId}> · \`${meta.captain.riotId}\``);
 	}
 	if (meta.accent) {
 		const label = accentLabel(meta.accent) ?? meta.accent;

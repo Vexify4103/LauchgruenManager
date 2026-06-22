@@ -37,7 +37,10 @@ const watchCommand: BotCommand = {
 
 		if (sub === 'start') {
 			setAutoscanEnabled(true, interaction.client);
-			await interaction.reply({ embeds: [makeEmbed('success', 'Auto-Scan started', 'The bot is now polling automatically for new matches.')], flags: MessageFlags.Ephemeral });
+			await interaction.reply({
+				embeds: [makeEmbed('success', 'Auto-Scan started', 'The bot is now polling automatically for new matches.')],
+				flags: MessageFlags.Ephemeral,
+			});
 			return;
 		}
 

@@ -7,7 +7,7 @@ import type { BotCommand } from '../../types.js';
 const createTeamCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('createteam')
-		.setDescription('Creates a new team, a voice channel, and links or creates a Discord role.')
+		.setDescription('Creates a new team, private channels, and links or creates a Discord role.')
 		.addStringOption((o) => o.setName('name').setDescription('Team name, e.g. "Team Coinflip"').setRequired(true))
 		.addBooleanOption((o) => o.setName('create_role').setDescription('Automatically create a new Discord role named after the team (default: false)').setRequired(false))
 		.addRoleOption((o) => o.setName('role').setDescription('Link an already existing Discord role instead of creating one').setRequired(false))
@@ -44,7 +44,9 @@ const createTeamCommand: BotCommand = {
 				roleNote = ' (new)';
 			} catch (error) {
 				console.warn(`[createteam] Role could not be created:`, error);
-				await interaction.editReply({ embeds: [makeEmbed('error', 'Role Creation Failed', 'The bot could not create the role — make sure it has the `Manage Roles` permission.')] });
+				await interaction.editReply({
+					embeds: [makeEmbed('error', 'Role Creation Failed', 'The bot could not create the role — make sure it has the `Manage Roles` permission.')],
+				});
 				return;
 			}
 		}
@@ -91,10 +93,38 @@ const createTeamCommand: BotCommand = {
 		}
 
 		const roleMention = role ? `\n🎭 Role: <@&${role.id}>${roleNote}` : '';
+		try {
+			const guild = interaction.guild;
+			const permissionOverwrites = [
+				{ id: guild.roles.everyone.id, type: OverwriteType.Role, deny: [PermissionFlagsBits.ViewChannel] },
+				...(role
+					? [
+							{
+								id: role.id,
+								type: OverwriteType.Role,
+								allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory],
+							},
+						]
+					: []),
+			];
+
+			const textChannel = await guild.channels.create({
+				name,
+				type: ChannelType.GuildText,
+				parent: config.teamTextCategoryId,
+				permissionOverwrites,
+			});
+
+			await updateStorage((storage) => {
+				const t = storage.teams[teamKey(name)];
+				if (t) t.textChannelId = textChannel.id;
+			});
+		} catch (error) {
+			console.warn(`[createteam] Text channel could not be created:`, error);
+		}
+
 		await interaction.editReply({
-			embeds: [
-				makeEmbed('success', 'Team created', `\`${result.name}\` has been set up.${roleMention}${voiceChannelMention}\n\nAdd players with \`/addplayer\`.`),
-			],
+			embeds: [makeEmbed('success', 'Team created', `\`${result.name}\` has been set up.${roleMention}${voiceChannelMention}\n\nAdd players with \`/addplayer\`.`)],
 		});
 	},
 };

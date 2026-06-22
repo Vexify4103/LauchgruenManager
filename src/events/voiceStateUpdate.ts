@@ -50,9 +50,7 @@ const voiceStateUpdateEvent: BotEvent<'voiceStateUpdate'> = {
 					joinedAt: Date.now(),
 				});
 
-				await member
-					.setNickname(buildQueueNickname(position, displayName), `Waiting queue: joined as #${position}`)
-					.catch(() => null);
+				await member.setNickname(buildQueueNickname(position, displayName), `Waiting queue: joined as #${position}`).catch(() => null);
 			});
 			return;
 		}
@@ -66,9 +64,7 @@ const voiceStateUpdateEvent: BotEvent<'voiceStateUpdate'> = {
 
 				const [entry] = s.waitingQueue.entries.splice(idx, 1);
 
-				await member
-					.setNickname(entry.originalNickname ?? null, 'Waiting queue: left, nickname restored')
-					.catch(() => null);
+				await member.setNickname(entry.originalNickname ?? null, 'Waiting queue: left, nickname restored').catch(() => null);
 
 				await renumberEntries(oldState.guild, s.waitingQueue.entries);
 			});

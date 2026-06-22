@@ -59,7 +59,10 @@ const startMatchCommand: BotCommand = {
 			targetChannel = null;
 		}
 		if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
-			await interaction.reply({ embeds: [makeEmbed('error', 'Matches channel not found', `Channel \`${channelId}\` not found or not a text channel. Set \`MATCHES_CHANNEL_ID\` in the .env.`)], flags: MessageFlags.Ephemeral });
+			await interaction.reply({
+				embeds: [makeEmbed('error', 'Matches channel not found', `Channel \`${channelId}\` not found or not a text channel. Set \`MATCHES_CHANNEL_ID\` in the .env.`)],
+				flags: MessageFlags.Ephemeral,
+			});
 			return;
 		}
 

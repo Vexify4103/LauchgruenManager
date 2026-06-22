@@ -37,9 +37,7 @@ async function readFromDb(): Promise<Storage> {
 
 async function writeToDb(storage: Storage): Promise<void> {
 	const db = await getDb();
-	await db
-		.collection<StorageDoc>(COLLECTION)
-		.replaceOne({ _id: DOC_ID }, { ...storage }, { upsert: true });
+	await db.collection<StorageDoc>(COLLECTION).replaceOne({ _id: DOC_ID }, { ...storage }, { upsert: true });
 }
 
 export async function loadStorage(): Promise<Storage> {

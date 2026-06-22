@@ -29,7 +29,13 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
 		match = await fetchMatch(matchId);
 	} catch (error) {
 		if (error instanceof RiotApiError && error.status === 404) {
-			const queriedId = (() => { try { return normalizeMatchId(matchId); } catch { return matchId; } })();
+			const queriedId = (() => {
+				try {
+					return normalizeMatchId(matchId);
+				} catch {
+					return matchId;
+				}
+			})();
 			return {
 				kind: 'riot-error',
 				message:
@@ -59,7 +65,10 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
 
 		for (const participant of match.info.participants) {
 			const team = puuidToTeam.get(participant.puuid);
-			if (!team) { orphans.push(participant); continue; }
+			if (!team) {
+				orphans.push(participant);
+				continue;
+			}
 
 			let bucket = perTeam.get(team.name);
 			if (!bucket) {
@@ -116,7 +125,10 @@ export async function scanMatch(matchId: string, options: ScanOptions = {}): Pro
  * Build a Components v2 scan result message. Returns null for outcomes that
  * should be suppressed in auto-poll mode.
  */
-export function buildScanMessage(outcome: ScanOutcome, options: { origin?: 'manual' | 'auto' } = {}): (Pick<MessageCreateOptions, 'components' | 'flags'> & { embeds?: never }) | { embeds: ReturnType<typeof makeEmbed>[]; components?: never; flags?: never } | null {
+export function buildScanMessage(
+	outcome: ScanOutcome,
+	options: { origin?: 'manual' | 'auto' } = {}
+): (Pick<MessageCreateOptions, 'components' | 'flags'> & { embeds?: never }) | { embeds: ReturnType<typeof makeEmbed>[]; components?: never; flags?: never } | null {
 	const { origin = 'manual' } = options;
 
 	if (outcome.kind === 'riot-error') {
@@ -126,16 +138,26 @@ export function buildScanMessage(outcome: ScanOutcome, options: { origin?: 'manu
 	if (outcome.kind === 'already-scanned') {
 		if (origin === 'auto') return null;
 		return {
-			embeds: [makeEmbed('warning', 'Match already scanned',
-				`\`${outcome.matchId}\` has already been processed. No champions will be added again.\nIf needed: manually remove the match ID from \`storage.json\` or use \`/resetteam\`.`)]
+			embeds: [
+				makeEmbed(
+					'warning',
+					'Match already scanned',
+					`\`${outcome.matchId}\` has already been processed. No champions will be added again.\nIf needed: manually remove the match ID from \`storage.json\` or use \`/resetteam\`.`
+				),
+			],
 		};
 	}
 
 	if (outcome.kind === 'no-teams-matched') {
 		if (origin === 'auto') return null;
 		return {
-			embeds: [makeEmbed('warning', 'No teams found',
-				`No player from match \`${outcome.matchId}\` is assigned to a registered team.\nCreate teams with \`/createteam\` and \`/addplayer\`.`)]
+			embeds: [
+				makeEmbed(
+					'warning',
+					'No teams found',
+					`No player from match \`${outcome.matchId}\` is assigned to a registered team.\nCreate teams with \`/createteam\` and \`/addplayer\`.`
+				),
+			],
 		};
 	}
 

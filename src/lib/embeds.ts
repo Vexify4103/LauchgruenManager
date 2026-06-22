@@ -38,7 +38,10 @@ export function hasAdminPermission(member: GuildMember): boolean {
 
 export function formatChampionList(champions: string[]): string {
 	if (champions.length === 0) return '*—*';
-	return [...champions].sort((a, b) => a.localeCompare(b)).map((c) => `\`${c}\``).join(', ');
+	return [...champions]
+		.sort((a, b) => a.localeCompare(b))
+		.map((c) => `\`${c}\``)
+		.join(', ');
 }
 
 // ─── Components v2 accent colours ───────────────────────────────────────────
@@ -89,9 +92,10 @@ export function buildBannedContainer(teamName: string, playerCount: number, play
 	const count = playedChampions.length;
 	const sorted = [...playedChampions].sort((a, b) => a.localeCompare(b));
 
-	const header = count === 0
-		? `### 🛡️ ${teamName}\n*No champions banned yet · ${playerCount} players registered*`
-		: `### 🛡️ ${teamName}\n**${count}** champion${count === 1 ? '' : 's'} banned · **${playerCount}** players registered`;
+	const header =
+		count === 0
+			? `### 🛡️ ${teamName}\n*No champions banned yet · ${playerCount} players registered*`
+			: `### 🛡️ ${teamName}\n**${count}** champion${count === 1 ? '' : 's'} banned · **${playerCount}** players registered`;
 
 	const container = new ContainerBuilder()
 		.setAccentColor(count === 0 ? ACCENT.success : ACCENT.team)
@@ -142,15 +146,9 @@ export function buildMatchContainer(opts: MatchEmbedOptions): ContainerBuilder {
 		? '*Tournament code has already been generated — press the captain button again to retrieve it.*'
 		: '*Only team captains can retrieve the tournament code.*';
 
-	const btnA = new ButtonBuilder()
-		.setCustomId(`fearless:code:${matchId}:${teamAKey}`)
-		.setLabel(`🏆 ${teamAName}`)
-		.setStyle(ButtonStyle.Primary);
+	const btnA = new ButtonBuilder().setCustomId(`fearless:code:${matchId}:${teamAKey}`).setLabel(`🏆 ${teamAName}`).setStyle(ButtonStyle.Primary);
 
-	const btnB = new ButtonBuilder()
-		.setCustomId(`fearless:code:${matchId}:${teamBKey}`)
-		.setLabel(`🏆 ${teamBName}`)
-		.setStyle(ButtonStyle.Secondary);
+	const btnB = new ButtonBuilder().setCustomId(`fearless:code:${matchId}:${teamBKey}`).setLabel(`🏆 ${teamBName}`).setStyle(ButtonStyle.Secondary);
 
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(btnA, btnB);
 
@@ -202,9 +200,7 @@ export function buildScanContainer(
 
 	if (hasOrphans) {
 		const lines = orphans.map(({ riotId, championName }) => `• ${championName} — ${riotId}`);
-		container.addTextDisplayComponents(
-			text(`**⚠️ Unmatched players**\nThese picks were **not** saved:\n${lines.join('\n')}`)
-		);
+		container.addTextDisplayComponents(text(`**⚠️ Unmatched players**\nThese picks were **not** saved:\n${lines.join('\n')}`));
 	}
 
 	return container;

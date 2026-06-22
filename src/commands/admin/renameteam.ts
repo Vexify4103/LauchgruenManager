@@ -52,7 +52,10 @@ const renameTeamCommand: BotCommand = {
 		const stats = { renamed: 0, unchanged: 0, failed: 0, skipped: 0 };
 		for (const player of linked) {
 			const [gameName, tagLine] = player.riotId.split('#');
-			if (!gameName || !tagLine || !player.discordId) { stats.skipped++; continue; }
+			if (!gameName || !tagLine || !player.discordId) {
+				stats.skipped++;
+				continue;
+			}
 			const application = await getApplicationByDiscordId(player.discordId);
 			const res = await renamePlayer(interaction.guild, botMember, player.riotId, gameName, tagLine, player.discordId, application?.displayName);
 			if (res.kind === 'renamed') stats.renamed++;

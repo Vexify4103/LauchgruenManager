@@ -6,21 +6,11 @@ import { getVerifiedAccountByDiscordId } from '../../lib/verifiedAccounts.js';
 import { getApplicationByDiscordId } from '../../lib/applications.js';
 import type { BotCommand, StoredPlayer } from '../../types.js';
 
-const ROLE_WHITELIST: ReadonlyArray<NonNullable<StoredPlayer['role']>> = [
-	'Top',
-	'Jungle',
-	'Mid',
-	'Bot',
-	'Support',
-	'Fill',
-	'Sub',
-];
+const ROLE_WHITELIST: ReadonlyArray<NonNullable<StoredPlayer['role']>> = ['Top', 'Jungle', 'Mid', 'Bot', 'Support', 'Fill', 'Sub'];
 
 function pickRole(preferred: string[] | undefined): StoredPlayer['role'] {
 	if (!preferred) return undefined;
-	const match = preferred.find((r) =>
-		ROLE_WHITELIST.some((known) => known.toLowerCase() === r.trim().toLowerCase())
-	);
+	const match = preferred.find((r) => ROLE_WHITELIST.some((known) => known.toLowerCase() === r.trim().toLowerCase()));
 	if (!match) return undefined;
 	return ROLE_WHITELIST.find((r) => r.toLowerCase() === match.trim().toLowerCase());
 }
@@ -29,23 +19,13 @@ const addPlayerCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('addplayer')
 		.setDescription('Adds a player to a team using their Riot account verified on the Web app.')
-		.addStringOption((o) =>
-			o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true)
-		)
-		.addStringOption((o) =>
-			o
-				.setName('player')
-				.setDescription('Verified player (Discord + Riot ID)')
-				.setRequired(true)
-				.setAutocomplete(true)
-		)
+		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
+		.addStringOption((o) => o.setName('player').setDescription('Verified player (Discord + Riot ID)').setRequired(true).setAutocomplete(true))
 		.addStringOption((o) =>
 			o
 				.setName('role')
-				.setDescription('Override role (defaults to the player\'s preferred role from their application)')
-				.addChoices(
-					...ROLE_WHITELIST.map((r) => ({ name: r, value: r }))
-				)
+				.setDescription("Override role (defaults to the player's preferred role from their application)")
+				.addChoices(...ROLE_WHITELIST.map((r) => ({ name: r, value: r })))
 		)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
 
@@ -75,10 +55,7 @@ const addPlayerCommand: BotCommand = {
 
 		await interaction.deferReply();
 
-		const [verified, application] = await Promise.all([
-			getVerifiedAccountByDiscordId(discordId),
-			getApplicationByDiscordId(discordId),
-		]);
+		const [verified, application] = await Promise.all([getVerifiedAccountByDiscordId(discordId), getApplicationByDiscordId(discordId)]);
 		if (!verified) {
 			await interaction.editReply({
 				embeds: [
@@ -127,36 +104,18 @@ const addPlayerCommand: BotCommand = {
 				return;
 			case 'already-on-this-team':
 				await interaction.editReply({
-					embeds: [
-						makeEmbed(
-							'warning',
-							'Already on this team',
-							`\`${result.riotId}\` is already on \`${result.team.name}\`.`
-						),
-					],
+					embeds: [makeEmbed('warning', 'Already on this team', `\`${result.riotId}\` is already on \`${result.team.name}\`.`)],
 				});
 				return;
 			case 'already-on-other-team':
 				await interaction.editReply({
-					embeds: [
-						makeEmbed(
-							'error',
-							'Player already taken',
-							`\`${result.riotId}\` is already on \`${result.otherTeam.name}\`.`
-						),
-					],
+					embeds: [makeEmbed('error', 'Player already taken', `\`${result.riotId}\` is already on \`${result.otherTeam.name}\`.`)],
 				});
 				return;
 			case 'added': {
 				const roleSuffix = result.role ? ` · Role: **${result.role}**` : '';
 				await interaction.editReply({
-					embeds: [
-						makeEmbed(
-							'success',
-							'Player added',
-							`<@${verified.discordId}> · \`${verified.riotId}\` → \`${result.team.name}\`${roleSuffix}`
-						),
-					],
+					embeds: [makeEmbed('success', 'Player added', `<@${verified.discordId}> · \`${verified.riotId}\` → \`${result.team.name}\`${roleSuffix}`)],
 				});
 			}
 		}

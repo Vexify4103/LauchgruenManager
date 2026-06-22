@@ -7,7 +7,7 @@ import type { BotCommand } from '../../types.js';
 const deleteTeamCommand: BotCommand = {
 	data: new SlashCommandBuilder()
 		.setName('deleteteam')
-		.setDescription('Deletes a team, its voice channel, and optionally the role.')
+		.setDescription('Deletes a team, its channels, and optionally the role.')
 		.addStringOption((o) => o.setName('team').setDescription('Team name').setRequired(true).setAutocomplete(true))
 		.addBooleanOption((o) => o.setName('delete_role').setDescription('Also delete the Discord role? (default: no)').setRequired(false))
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.Administrator),
@@ -44,6 +44,18 @@ const deleteTeamCommand: BotCommand = {
 
 		const { team } = result;
 		const lines: string[] = [`Team \`${team.name}\` removed from the database.`];
+
+		if (team.textChannelId) {
+			try {
+				const channel = await interaction.guild.channels.fetch(team.textChannelId);
+				if (channel) {
+					await channel.delete(`/deleteteam: ${team.name}`);
+					lines.push('Text channel deleted.');
+				}
+			} catch {
+				lines.push('Text channel could not be deleted (already gone or missing permissions).');
+			}
+		}
 
 		// Delete voice channel
 		if (team.voiceChannelId) {

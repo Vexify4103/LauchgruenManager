@@ -30,7 +30,10 @@ let logChannelCache: { send(opts: { embeds: EmbedBuilder[] }): Promise<unknown> 
 
 async function getLogChannel(client: Client) {
 	if (logChannelCache !== undefined) return logChannelCache;
-	if (!config.logChannelId) { logChannelCache = null; return null; }
+	if (!config.logChannelId) {
+		logChannelCache = null;
+		return null;
+	}
 
 	try {
 		const ch = await client.channels.fetch(config.logChannelId);
@@ -64,7 +67,9 @@ export function logCommand(client: Client, interaction: ChatInputCommandInteract
 			embed.addFields({ name: '⚠️ Error', value: `\`\`\`${errMsg.slice(0, 900)}\`\`\`` });
 		}
 
-		await channel.send({ embeds: [embed] }).catch(() => { /* never break the bot */ });
+		await channel.send({ embeds: [embed] }).catch(() => {
+			/* never break the bot */
+		});
 	})();
 }
 
@@ -74,13 +79,12 @@ export function logInfo(client: Client, title: string, description?: string): vo
 		const channel = await getLogChannel(client);
 		if (!channel) return;
 
-		const embed = new EmbedBuilder()
-			.setColor(0x5865f2)
-			.setTitle(title)
-			.setTimestamp();
+		const embed = new EmbedBuilder().setColor(0x5865f2).setTitle(title).setTimestamp();
 
 		if (description) embed.setDescription(description);
 
-		await channel.send({ embeds: [embed] }).catch(() => { /* never break the bot */ });
+		await channel.send({ embeds: [embed] }).catch(() => {
+			/* never break the bot */
+		});
 	})();
 }
