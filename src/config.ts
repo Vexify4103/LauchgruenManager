@@ -55,4 +55,6 @@ export const config = {
 	streamScheduleChannelId: process.env.STREAM_SCHEDULE_CHANNEL_ID?.trim() || null,
 	/** Discord user ID that is allowed to post the stream schedule and receives the weekly reminder. */
 	streamScheduleUserId: process.env.STREAM_SCHEDULE_USER_ID?.trim() || null,
+	/** If true, the reminder DM fires immediately on bot restart (for testing). */
+	streamScheduleTest: getBool('STREAM_SCHEDULE_TEST', false),
 };

@@ -1,4 +1,4 @@
-import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { ChannelType, MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { config } from '../../config.js';
 import { makeEmbed } from '../../lib/embeds.js';
 import type { BotCommand } from '../../types.js';
@@ -35,6 +35,41 @@ function formatGermanDate(d: Date): string {
 	return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+function fixPunctuation(text: string): string {
+	let s = text.trim();
+	if (!s) return s;
+
+	// Protect Discord emoji :name: from colon spacing fixes
+	const emojis: string[] = [];
+	s = s.replace(/:[a-zA-Z0-9_]+:/g, (m) => {
+		emojis.push(m);
+		return `\x00EMOJI${emojis.length - 1}\x00`;
+	});
+
+	// Capitalize first letter
+	s = s.charAt(0).toUpperCase() + s.slice(1);
+
+	// Remove space before punctuation
+	s = s.replace(/\s+([.!?:;,])/g, '$1');
+
+	// Ensure space after period when followed by a letter: "ending.Next" → "ending. Next"
+	s = s.replace(/\.([A-Za-z])/g, '. $1');
+
+	// Ensure space after colon: "SCHACH:Ab" → "SCHACH: Ab" (but not "20 Uhr:" at end)
+	s = s.replace(/(\w):(\w)/g, '$1: $2');
+
+	// Restore Discord emojis
+	s = s.replace(/\x00EMOJI(\d+)\x00/g, (_, i) => emojis[Number(i)]);
+
+	// Trim trailing whitespace
+	s = s.trimEnd();
+
+	// Add trailing period if missing (skip if ends with ) or common fillers)
+	if (s && !/[.!?:…)\]]$/.test(s) && !/\bxd\b$/i.test(s)) s += '.';
+
+	return s;
+}
+
 const streamscheduleCommand: BotCommand = {
 	data: (() => {
 		const cmd = new SlashCommandBuilder()
@@ -50,7 +85,15 @@ const streamscheduleCommand: BotCommand = {
 	})(),
 
 	async execute(interaction) {
-		if (config.streamScheduleUserId && interaction.user.id !== config.streamScheduleUserId) {
+		if (!config.streamScheduleUserId) {
+			await interaction.reply({
+				embeds: [makeEmbed('error', 'Nicht konfiguriert', '`STREAM_SCHEDULE_USER_ID` ist nicht gesetzt. Der Befehl ist deaktiviert.')],
+				flags: MessageFlags.Ephemeral,
+			});
+			return;
+		}
+
+		if (interaction.user.id !== config.streamScheduleUserId) {
 			await interaction.reply({
 				embeds: [makeEmbed('error', 'Keine Berechtigung', 'Du bist nicht berechtigt, diesen Befehl auszuführen.')],
 				flags: MessageFlags.Ephemeral,
@@ -74,7 +117,7 @@ const streamscheduleCommand: BotCommand = {
 
 		const dayEntries = DAY_FIELDS.map((day) => {
 			const value = interaction.options.getString(day.name);
-			const text = value || '—';
+			const text = value ? fixPunctuation(value) : '—';
 			return `> - ${day.label}: ${text}`;
 		});
 
@@ -84,7 +127,7 @@ const streamscheduleCommand: BotCommand = {
 			...dayEntries,
 			'',
 			'Wünsch euch ne gute Woche, wir sehen uns im Stream',
-			'Bis dann Luca <:lauchg2Hello:1386410663559168071>',
+			'Bis dann Luca :teddy_bear:',
 		].join('\n');
 
 		const channel = await interaction.guild.channels.fetch(config.streamScheduleChannelId);
@@ -95,7 +138,10 @@ const streamscheduleCommand: BotCommand = {
 			return;
 		}
 
-		await channel.send(scheduleText);
+		const msg = await channel.send(scheduleText);
+		if (channel.type === ChannelType.GuildAnnouncement) {
+			await msg.crosspost().catch(() => null);
+		}
 		await interaction.editReply({
 			embeds: [makeEmbed('success', 'Streamplan gepostet', `Der Plan für **${formatGermanDate(monday)} - ${formatGermanDate(sunday)}** wurde gepostet.`)],
 		});
